@@ -1,0 +1,157 @@
+@import "/src/assets/css/mixins";
+
+$lang-width: 70px;
+$lang-height: 40px;
+$circle-multipher: 0.85;
+$blob-size_big: calc($lang-height * $circle-multipher);
+$blob-size_medium: calc($blob-size_big * 0.85);
+$blob-size_small: calc($blob-size_big * 0.70);
+$delta-big: calc(($lang-width - $blob-size_big - $lang-height + $blob-size_big) / 2);
+$delta-medium: calc(($lang-width - $blob-size_medium - $lang-height + $blob-size_medium) / 2);
+$delta-small: calc(($lang-width - $blob-size_small - $lang-height + $blob-size_small) / 2);
+$transition_lang: cubic-bezier(0.51, 0.06, 0.56, 1.37) .2s;
+
+$lang_bg_selected: var(--lang_bg_selected); //bg selected
+$lang_bg: var(--lang_bg); //bg
+$lang_bg_hover: var(--lang_bg_hover); //hover bg
+$lang_text_hover: var(--lang_text_hover); //text hover
+$lang_text: var(--lang_text); //text
+$lang_text_selected: var(--lang_text_selected); //text selected
+
+.sw_lang {
+	position: relative;
+    cursor: pointer;
+    width: $lang-width;
+    height: $lang-height;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: calc($lang-height - $blob-size_big);
+    padding-right: calc($lang-height - $blob-size_big);
+    align-items: center;
+    text-transform: uppercase;
+    background-color: $lang_bg;
+    font-weight: 700;
+    z-index: 5000;
+    transition: background-color $transition_theme;
+	transform: scale(0.6);
+
+    & * {
+        -webkit-user-drag: none !important;
+        user-select: none !important;  
+    }
+    
+	@include respond-to(xs) {
+		transform: scale(0.70);
+	}
+	
+    @include respond-to(sm) {
+        transform: scale(0.80);
+    }
+
+	@include respond-to(md) {
+        transform: scale(.9);
+    }
+      
+
+
+    & > .sw_lang__text {
+        z-index: 5600;
+        color: $lang_text_selected;
+
+        font-weight: 800;
+        font-size: 14px;
+        width: $blob-size_medium;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &::before {
+            content: '';
+            border-radius: 50%;
+            background-color: $lang_bg_selected;
+            position: absolute;
+            top: 50%;
+            transition: all $transition_lang;
+            z-index: -1;
+        }
+    }
+
+
+
+    &.en{
+        z-index: 5750;
+
+        & > .lang_fr::before {
+            height: $blob-size_medium;
+            width: $blob-size_medium;
+            transform: translate(-50%, -50%);
+            left: calc(50% - $delta-medium);
+        }
+
+
+        & > .lang_en {
+            z-index: 5590;
+            color: $lang_text;
+            transition: color $transition_lang;
+            
+            &::before {
+                content: '';
+                border-radius: 50%;
+                height: $blob-size_big;
+                width: $blob-size_big;
+                transform: translate(-50%, -50%);
+                left: calc(50% - $delta-big);
+            }
+            
+            &:hover {
+                color: $lang_text_hover;
+                &::before {
+                    background-color: $lang_bg_hover ;
+                    left: calc(50% + $delta-small);
+                    height: $blob-size_small;
+                    width: $blob-size_small;
+                }
+            }
+        }
+    }
+
+
+    &.fr{
+        z-index: 5750;
+
+        & > .lang_en::before {
+            height: $blob-size_medium;
+            width: $blob-size_medium;
+            transform: translate(-50%, -50%);
+            left: calc(50% + $delta-medium);
+        }
+
+
+        & > .lang_fr {
+            z-index: 5590;
+            color: $lang_text;
+            transition: color $transition_lang;
+
+
+            &::before {
+                height: $blob-size_big;
+                width: $blob-size_big;
+                transform: translate(-50%, -50%);
+                left: calc(50% + $delta-big);
+            }
+
+            &:hover {
+                color: $lang_text_hover;
+                &::before {
+                    background-color: $lang_bg_hover;
+                    left: calc(50% - $delta-small);
+                    height: $blob-size_small;
+                    width: $blob-size_small;
+                }
+            }
+        }
+    }
+
+}
+

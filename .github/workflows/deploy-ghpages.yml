@@ -1,0 +1,30 @@
+name: Build, Deploy to gh-pages
+on: 
+  workflow_dispatch:
+  pull_request:
+    types: [opened, edited, reopened]
+permissions:
+  contents: write
+jobs: 
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repo code
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Build
+        run: |
+          npm i
+          npm run build
+          touch out/.nojekyll
+        # Tests will be here
+      - name: Deploy
+        # https://github.com/JamesIves/github-pages-deploy-action
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        with:
+          branch: gh-pages
+          folder: out

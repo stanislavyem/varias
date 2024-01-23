@@ -1,0 +1,11 @@
+@import "../../../assets/css/mixins.scss";
+
+section.section_about {
+	h2 {
+		font-weight: 700;
+	}
+
+	p {
+		margin-top: 30px;
+	}
+}

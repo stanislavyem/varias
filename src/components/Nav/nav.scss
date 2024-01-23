@@ -1,0 +1,15 @@
+@import "../../assets/css/mixins.scss";
+
+
+nav {
+	
+	& .nav-list_desktop {
+		display: none;
+		align-items: center;
+		
+		@include respond-to(sm) {
+			display: flex;
+		}
+		
+	}
+}

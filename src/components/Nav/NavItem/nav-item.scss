@@ -1,0 +1,42 @@
+@import "../../../assets/css/mixins.scss";
+
+.nav-item {
+
+	margin-left: 60px;
+	@include respond-to(sm) {
+
+	}
+
+	& > a, button {
+		// color: var(--nav);
+		// font-size: 16px;
+		// font-weight: 600;
+		// line-height: 19px;
+		// letter-spacing: 0em;
+		// text-align: center;
+		
+
+
+		@include respond-to(sm) {
+			color: var(--nav);
+			font-size: 16px;
+			font-weight: 600;
+			line-height: 19px;
+			letter-spacing: 0em;
+			text-align: center;
+			color: var(--nav);
+		}
+
+		@include respond-to(md) {
+			font-size: 20px;
+			line-height: 24px;
+		}
+	}
+	
+	&.active {
+		& > a, button {
+			color: var(--nav_selected);
+			text-decoration: underline;
+		}
+	}
+}
