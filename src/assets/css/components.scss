@@ -89,6 +89,10 @@ section {
 		padding-top: 80px;
 		background: linear-gradient(rgba(var(--primary_color_RGB), 50%), rgba(var(--primary_color_RGB), 10%));
 	}
+
+	&.section_text {
+		display: none;
+	}
 }
 
 section:only-child {
