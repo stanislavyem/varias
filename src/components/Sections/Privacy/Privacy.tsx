@@ -7,7 +7,6 @@ const SectionPrivacy = () => {
 	const { lang } = useAppContext()
 
 	return (
-		/* eslint-disable quotes */
 		<section className='section_privacy'>
 			<div className="section__content section_text">
 				<div className="container_page container_content">
@@ -136,7 +135,6 @@ const SectionPrivacy = () => {
 				</div>
 			</div>
 		</section>
-		/* eslint-enable quotes */
 	)
 }
 
