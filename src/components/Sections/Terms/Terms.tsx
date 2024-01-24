@@ -7,7 +7,6 @@ const SectionTerms = () => {
 	const { lang } = useAppContext()
 
 	return (
-		/* eslint-disable quotes */
 		<section className='section_terms'>
 			<div className="section__content section_text">
 				<div className="container_page container_content">
@@ -100,9 +99,6 @@ const SectionTerms = () => {
 
 					<h2>Contact Information</h2>
 					<p>If you have any queries regarding any of our terms, please contact us.</p>
-
-
-
 				</div>
 			</div>
 		</section>

@@ -7,7 +7,6 @@ const SectionAbout = () => {
 	const { lang } = useAppContext()
 
 	return (
-		/* eslint-disable quotes */
 		<section className='section_about'>
 			<div className="section__content section_text">
 				<div className="container_page container_content">
