@@ -2,16 +2,16 @@ import './nav.scss'
 import { INavItem } from '@/interfaces';
 import NavItem from './NavItem/NavItem';
 import NavLogin from './NavLogin/NavLogin';
-import { homeLink } from '@/assets/js/consts';
+import { linkAbout, linkHome, linkPrivacy, linkTerms } from '@/assets/js/consts';
 
 
-const navItems: INavItem[] = [
+export const navItems: INavItem[] = [
 	{
 		title: {
 			en: 'Home',
 			fr: 'FR Home',
 		},
-		link: homeLink,
+		link: linkHome,
 		
 	},
 	{
@@ -19,29 +19,36 @@ const navItems: INavItem[] = [
 			en: 'Privacy',
 			fr: 'FR Privacy',
 		},
-		link: '/privacy'
+		link: linkPrivacy
+	},
+	{
+		title: {
+			en: 'Terms',
+			fr: 'FR Terms',
+		},
+		link: linkTerms
 	},
 	{
 		title: {
 			en: 'About Us',
 			fr: 'FR About Us',
 		},
-		link: '/aboutUs'
+		link: linkAbout
 	},
-	{
-		title: {
-			en: 'Login',
-			fr: 'FR Login',
-		},
-		link: '/login'
-	},
-	{
-		title: {
-			en: 'Register',
-			fr: 'FR Register',
-		},
-		link: '/register'
-	},
+	// {
+	// 	title: {
+	// 		en: 'Login',
+	// 		fr: 'FR Login',
+	// 	},
+	// 	link: '/login'
+	// },
+	// {
+	// 	title: {
+	// 		en: 'Register',
+	// 		fr: 'FR Register',
+	// 	},
+	// 	link: '/register'
+	// },
 
 ]
 

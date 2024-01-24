@@ -4,6 +4,7 @@ import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { Context } from "@/providers/Context";
 import ModalWrapper from "@/components/ModalWrapper/ModalWrapper";
+import Homer from "@/components/Homer/Homer";
 
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 		<html lang="en">
 			<body className="flex flex-col min-h-dvh">
 				<Context>
+					<Homer />
 					<ModalWrapper />
 					<Header />
 					<main>

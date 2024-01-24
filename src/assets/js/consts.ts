@@ -1,5 +1,7 @@
 import { TInputTypes } from "@/interfaces"
 
+export const scrollThreshold = 1; //in screen heights
+
 export const screenNames = ['start','xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const
 
 export const screenSizes: Record<typeof screenNames[number], number> = {
@@ -12,7 +14,10 @@ export const screenSizes: Record<typeof screenNames[number], number> = {
 	start: 1
 }
 
-export const homeLink = '/home'
+export const linkHome = '/home'
+export const linkPrivacy = '/privacy-policy'
+export const linkTerms = '/terms-conditions'
+export const linkAbout = '/about-us'
 interface IInputFilter {
 	length: {
 		min: number,

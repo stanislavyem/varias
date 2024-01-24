@@ -1,3 +1,92 @@
+@import "../../assets/css/mixins.scss";
+
 footer {
-	background-color: #000;
+	background-color: var(--footer_bg);
+	padding-top: 42px;
+	padding-bottom: 27px;
+
+	.links {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		flex-direction: column;
+
+		@include respond-to(sm) {
+			flex-direction: row;
+		}
+
+
+		.socials {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 42px;
+
+			.img-wrapper {
+				height: 31px;
+				width: 31px;
+
+				& > svg {
+					height: 100%;
+					width: 100%;
+				}
+			}
+		}
+
+		.markets {
+			display: flex;
+			gap: 15%;
+			margin-top: 40px;
+
+			@include respond-to(sm) {
+				margin-top: 0;
+			}
+	
+			.img-wrapper {
+				height: 45px;
+				width: 155px;	
+				
+				@include respond-to(sm) {
+					height: 36px;
+					width: 120px;
+				}
+			}
+		}
+	}
+
+
+	.disclaimer {
+		margin-top: 40px;
+		
+		@include respond-to(sm) {
+			margin-top: 50px;
+		}
+
+		@include respond-to(md) {
+			margin-top: 40px;
+		}
+
+		p {
+			color: var(--text_reverse);
+			text-align: center;
+			font-size: 10px;
+			font-weight: 400;
+			margin-top: 0;
+
+			@include respond-to(sm) {
+			}
+	
+			@include respond-to(md) {
+			}
+		}
+	}
+
+	.copyright {
+		p {
+			font-size: 10px;
+			color: var(--text_reverse);
+			text-align: center;
+		}
+	}
 }
