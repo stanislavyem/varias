@@ -16,6 +16,7 @@ const Homer = () => {
 
 
 	const checkScroll = () => {
+		//test
 		const screenHeight = screen?.height || 100;
 		const threshold =  screenHeight * scrollThreshold
 		const scrolled = document.body.scrollTop > threshold || document.documentElement.scrollTop > threshold
@@ -29,8 +30,6 @@ const Homer = () => {
         document.addEventListener('scroll', checkScrollDebounced)
         return () => document.removeEventListener('scroll', checkScrollDebounced)
     }, [])
-
-
 
 
 	return (
