@@ -10,6 +10,16 @@ export const makeImageSizes = (params: Partial<Record<typeof screenNames[number]
 }
 
 
+export const debounce = (cb: Function, delay = 1000): (...args: any[]) => void => {
+    let timeout: ReturnType<typeof setTimeout>
+    return (...args: any[]) => {
+        clearTimeout(timeout)
+        timeout = setTimeout(() => {
+            cb(...args)
+        }, delay)
+    }
+}
+
 // get paren element and return array of all selectable elements inside
 const getSelectableElements = (_parent: HTMLElement | null): HTMLElement[] => {
     if (!_parent) return []

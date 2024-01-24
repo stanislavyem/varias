@@ -19,13 +19,24 @@ $transition_modal: .5s;
 
 
 
-
 body {
 	--primary_bg: #DDD;
 	--primary_color: #1b9952;
 	--primary_color_RGB: 27, 153, 82;
 	--primary_text: #000;
 	--text: #000;
+	--text_reverse: #FFF;
+
+	--section_1_start: rgba(27, 153, 82, 50%);
+	--section_1_end: rgba(27, 153, 82, 10%);
+
+	--section_2: rgba(4, 187, 246, 33%);
+	--section_3: rgba(246, 4, 236, 33%);
+	--section_4: rgba(246, 236, 4, 33%);
+	--section_5: rgba(246, 4, 4, 33%);
+	--section_6: rgba(255, 255, 255, 50%);
+
+	--footer_bg: #000;
 
 	--nav: #000;
 	--nav_selected: #000;

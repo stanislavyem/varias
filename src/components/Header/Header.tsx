@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Nav from '../Nav/Nav'
 // import ThemeSw from '../ThemeSw/ThemeSw'
 import './header.scss'
-import { homeLink } from '@/assets/js/consts'
+import { linkHome } from '@/assets/js/consts'
 // import logo from '@/assets/images/logo.png'
 // import Image from 'next/image'
 // import { makeImageSizes } from '@/assets/js/tools'
@@ -14,7 +14,7 @@ const Header = () => {
 	return (
 		<header>
 			<div className="container_page container_content header__content">
-				<Link className='header__company' href={homeLink}>Datemarks</Link>
+				<Link className='header__company' href={linkHome}>Datemarks</Link>
 				{/* <div className="logo-wrapper mr-auto relative">
 					<Link href={homeLink}>
 						<Image 

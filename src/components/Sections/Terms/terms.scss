@@ -1,6 +1,6 @@
 @import "../../../assets/css/mixins.scss";
 
-section.section_privacy {
+section.section_terms {
 	background: linear-gradient(
 		var(--section_1_start),
 		var(--section_1_end),
@@ -8,6 +8,6 @@ section.section_privacy {
 		var(--section_3),
 		var(--section_4),
 		var(--section_5),
-		var(--section_6)
-	)
+		var(--section_6),
+	);
 }
