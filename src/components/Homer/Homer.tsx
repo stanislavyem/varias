@@ -28,7 +28,7 @@ const Homer = () => {
     useEffect(() => {       
         document.addEventListener('scroll', checkScrollDebounced)
         return () => document.removeEventListener('scroll', checkScrollDebounced)
-    }, [])
+    }, []) 
 
 
 
