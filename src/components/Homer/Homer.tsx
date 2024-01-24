@@ -16,7 +16,7 @@ const Homer = () => {
 
 
 	const checkScroll = () => {
-		//test
+		//test 2
 		const screenHeight = screen?.height || 100;
 		const threshold =  screenHeight * scrollThreshold
 		const scrolled = document.body.scrollTop > threshold || document.documentElement.scrollTop > threshold
