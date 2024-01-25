@@ -1,0 +1,83 @@
+@import "../../../assets/css/mixins.scss";
+
+.block_info-markets {
+	display: flex;
+	flex-direction: column;
+
+	h2 {
+		margin-top: 0;
+		margin-bottom: 35px;
+		order: -1;
+		display: none;
+		
+		@include respond-to(lg) {
+			text-align: left;
+			display: initial;
+		}
+	}
+	
+	p {
+		text-align: center;
+		font-size: 1.1rem;
+		margin-top: 15px;
+
+		@include respond-to(xs) {
+			font-size: 1.3rem;
+			margin-top: 20px;
+		}
+		@include respond-to(md) {
+			margin-top: 25px;
+			font-size: 1.6rem;
+		}
+		@include respond-to(lg) {
+			margin-top: 30px;
+			text-align: left;
+		}
+	
+	
+	
+		&:nth-of-type(1) {
+			margin-top: 0;
+		}
+	}
+
+	.links {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 20px;
+		margin-top: 20px;
+
+		@include respond-to(sm) {
+			gap: 30px;
+			flex-direction: row;
+		}
+
+		@include respond-to(md) {
+			margin-top: 20px;
+		}
+
+		@include respond-to(lg) {
+			justify-content: flex-start;
+		}
+
+		img {
+			width: 155px;
+
+			
+			@include respond-to(xs) {
+				width: 220px;
+			}
+
+			@include respond-to(sm) {
+				width: 190px;
+			}
+
+			@include respond-to(md) {
+				width: 180px;
+			}
+
+		}
+	}
+}

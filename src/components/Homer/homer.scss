@@ -2,8 +2,8 @@
 
 
 .homer {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border: 1px solid $black;
     background-color: #FFF;
     position: fixed;
@@ -14,12 +14,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     opacity: .7;
+    box-shadow: -5px -5px 5px 0px rgba(0, 0, 0, 0.5);
+
+    @include respond-to(xs) {
+        width: 40px;
+        height: 40px;
+    }
+
+    @include respond-to(md) {
+        width: 45px;
+        height: 45px;
+    }
+
+    @include respond-to(lg) {
+        width: 50px;
+        height: 50px;
+    }
 
     &.scrolled {
-        transform: translateX(10%) rotate(180deg);
+        transform: translateX(-20%) rotate(180deg);
         transition: transform $transition_fast;
     }
 

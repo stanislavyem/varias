@@ -1,11 +1,10 @@
 import Image from 'next/image'
 import './footer.scss'
 import { svgs } from '@/assets/icons/svgs'
-import appStore from '../../assets/icons/app_store.png'
-import playMarket from '../../assets/icons/play_market.png'
+import appStore from '../../assets/images/app_store.png'
+import playMarket from '../../assets/images/play_market.png'
 import Link from 'next/link'
 import { linkAbout, linkPrivacy, linkTerms } from '@/assets/js/consts'
-// import { linkAbout, linkPrivacy, linkTerms } from '@/assets/js/consts'
 
 const Footer = () => {
 	return (
@@ -30,7 +29,7 @@ const Footer = () => {
 						</a>
 					</div>
 					<div className="markets">
-						<a href="https://www.linkedin.com" target="_blank">
+						<a href="https://www.apple.com" target="_blank">
 							<div className="img-wrapper">
 								<Image 
 									src={appStore.src}
@@ -40,7 +39,7 @@ const Footer = () => {
 								/>
 							</div>
 						</a>
-						<a href="https://www.linkedin.com" target="_blank">
+						<a href="https://www.google.com" target="_blank">
 							<div className="img-wrapper">
 								<Image 
 									src={playMarket.src}
