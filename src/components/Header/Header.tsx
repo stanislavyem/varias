@@ -28,7 +28,7 @@ const Header = () => {
 					</Link>
 				</div> */}
 				
-				<Nav/>
+				{/* <Nav/> */}
 
 				{/* <div className="lang-sw-wrapper me-3 h-full flex items-center">
 					<LangSw />

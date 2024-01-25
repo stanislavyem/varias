@@ -4,8 +4,7 @@ import Image from 'next/image'
 
 
 interface IBlockInfo {
-	header?: string
-	text: string[]
+	children: JSX.Element
 	img: {
 		src: string
 		alt: string
@@ -13,12 +12,11 @@ interface IBlockInfo {
 	}
 }
 
-const BlockInfo: React.FC<IBlockInfo> = ({header, text, img}): JSX.Element => {
+const BlockInfo: React.FC<IBlockInfo> = ({children, img}): JSX.Element => {
 	return (
 		<div className={`block_info img_${img.pos[0] === 'r' ? 'right' : 'left'} img_${img.pos[1] === 't' ? 'top' : 'bottom'}`}>
-			<div className="block_info__text">
-				{header && <h2>{header}</h2>}
-				{text.map((t, i) => <p key={i}>{t}</p>)}
+			<div className="block_info__data">
+				{children}
 			</div>
 			<div className="block_info__image">
 				<div className="img-wrapper">
