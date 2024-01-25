@@ -5,7 +5,12 @@ $md: 768px;
 $sm: 640px;
 $xs: 480px;
 
-$container_width: 1140px;
+$container_width: 1140px; // content part, w/o paddings
+$padding: 14px;
+$padding_xs: 20px;
+$padding_sm: 24px;
+$padding_md: 30px;
+
 
 $black: #000;
 $white: #FFF;
@@ -21,14 +26,14 @@ $transition_modal: .5s;
 
 body {
 	--primary_bg: #DDD;
-	--primary_color: #1b9952;
+	--primary_color: #468335; //#1b9952;
 	--primary_color_RGB: 27, 153, 82;
 	--primary_text: #000;
 	--text: #000;
 	--text_reverse: #FFF;
 
-	--section_1_start: rgba(27, 153, 82, 50%);
-	--section_1_end: rgba(27, 153, 82, 10%);
+	--section_1_start: rgba(70, 131, 53, 50%);
+	--section_1_end: rgba(70, 131, 53, 10%);
 
 	--section_2: rgba(4, 187, 246, 33%);
 	--section_3: rgba(246, 4, 236, 33%);

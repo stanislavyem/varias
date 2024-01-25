@@ -7,8 +7,8 @@ const SectionTerms = () => {
 	const { lang } = useAppContext()
 
 	return (
-		<section className='section_terms'>
-			<div className="section__content section_text">
+		<section className='section_terms section_text'>
+			<div className="section__content">
 				<div className="container_page container_content">
 					<h1>{lang === 'en' ? 'Terms & Conditions' : 'FR Privacy'}</h1>
 					<h2>Welcome To Our Terms & Conditions</h2>

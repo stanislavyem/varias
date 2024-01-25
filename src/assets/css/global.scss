@@ -13,6 +13,7 @@
 	transition: color $transition_theme, background-color $transition_theme;
 	font-family: 'Inter', Arial;
 	scroll-behavior: smooth;
+	box-sizing: border-box;
 }
 
 

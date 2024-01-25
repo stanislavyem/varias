@@ -2,27 +2,27 @@
 
 .container_page {
 	width: 100%;
-	padding-left: 14px;
-	padding-right: 14px;
+	padding-left: $padding;
+	padding-right: $padding;
 
 	@include respond-to(xs) {
-		padding-left: 20px;
-		padding-right: 20px;
+		padding-left: $padding_xs;
+		padding-right: $padding_xs;
 	}
 
 	@include respond-to(sm) {
-		padding-left: 24px;
-		padding-right: 24px;
+		padding-left: $padding_sm;
+		padding-right: $padding_sm;
 	}
 
 	@include respond-to(md) {
-		padding-left: 30px;
-		padding-right: 30px;
+		padding-left: $padding_md;
+		padding-right: $padding_md;
 	}
 }
 
 .container_content {
-	max-width: $container_width;
+	max-width: calc($container_width + $padding_md);
 	margin-left: auto;
 	margin-right: auto;
 	width: 100%;
@@ -34,14 +34,6 @@
 	background-color: transparent;
 }
 
-
-// h1 {
-// 	text-align: center;
-// 	margin-left: auto;
-// 	margin-right: auto;
-// 	color: var(--primary_text);
-// 	font-size: 2.5rem;
-// }
 
 h1 {
 	text-align: center;
@@ -246,69 +238,11 @@ section {
 	& .section__content {
 		//padding-top: 50px;
 		padding-bottom: 100px;
+		width: 100%;
+	}
 
-		// h2 {
-		// 	margin-bottom: 1.6rem;
-		
-		// 	@include respond-to(sm) {
-		// 		margin-bottom: 1.8rem;
-		// 	}
-		
-		// 	@include respond-to(md) {
-		// 		margin-bottom: 2rem;
-		// 	}
-		// }
-
-		// h3 {
-		// 	margin-top: 1.6rem;
-		
-		// 	@include respond-to(sm) {
-		// 		margin-top: 1.8rem;
-		// 	}
-		
-		// 	@include respond-to(md) {
-		// 		margin-top: 2rem;
-		// 	}
-		// }
-		
-		// h4 {
-		// 	margin-top: 1.4rem;
-		
-		// 	@include respond-to(sm) {
-		// 		margin-top: 1.5rem;
-		// 	}
-		
-		// 	@include respond-to(md) {
-		// 		margin-top: 1.6rem;
-		// 	}
-		// }
-
-		// h5 {
-		// 	margin-top: 1.3rem;
-		
-		// 	@include respond-to(sm) {
-		// 		margin-top: 1.4rem;
-		// 	}
-		
-		// 	@include respond-to(md) {
-		// 		margin-top: 1.5rem;
-		// 	}
-		// }
-	
-		// p {
-		// 	//margin-top: 1rem;
-		// 	font-size: 14px;
-
-		// 	@include respond-to(sm) {
-		// 		font-style: 16px;
-		// 	}
-		
-		// 	@include respond-to(md) {
-		// 		font-size: 20px;
-		// 	}
-		// }
-
-		&.section_text {
+	&.section_text {
+		.section__content {
 			margin-top: 50px;
 			margin-bottom: auto;
 
@@ -320,10 +254,7 @@ section {
 				margin-top: 80px;
 			}
 		}
-
 	}
-
-
 }
 
 section:only-child {

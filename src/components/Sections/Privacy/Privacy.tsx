@@ -7,8 +7,8 @@ const SectionPrivacy = () => {
 	const { lang } = useAppContext()
 
 	return (
-		<section className='section_privacy'>
-			<div className="section__content section_text">
+		<section className='section_privacy section_text'>
+			<div className="section__content">
 				<div className="container_page container_content">
 					<h1>{lang === 'en' ? 'Privacy Policy' : 'FR Privacy'}</h1>
 					<h2>Welcome To Our Privacy Policy</h2>
