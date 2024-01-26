@@ -61,11 +61,11 @@ const SectionPrivacy = () => {
 					<p>The app does use third-party services that may collect information used to identify you.</p>
 					<p>Link to the privacy policy of third-party service providers used by the app</p>
 					<ul>
-						<li><a className='underline' target='_blank' href="https://www.google.com/policies/privacy/">Google Play Services</a></li>
-						<li><a className='underline' target='_blank' href="https://support.google.com/admob/answer/6128543?hl=en">AdMob</a></li>
-						<li><a className='underline' target='_blank' href="https://imagekit.io/privacy-policy-new/">Imagekit.io</a></li>
-						<li><a className='underline' target='_blank' href="https://www.mapbox.com/legal/privacy">Mabox</a></li>
-						<li><a className='underline' target='_blank' href="https://www.amity.co/legal/privacy-policy">Amity</a></li>
+						<li><a className='underline' target='_blank' aria-label="Open the link in a new window" href="https://www.google.com/policies/privacy/">Google Play Services</a></li>
+						<li><a className='underline' target='_blank' aria-label="Open the link in a new window" href="https://support.google.com/admob/answer/6128543?hl=en">AdMob</a></li>
+						<li><a className='underline' target='_blank' aria-label="Open the link in a new window" href="https://imagekit.io/privacy-policy-new/">Imagekit.io</a></li>
+						<li><a className='underline' target='_blank' aria-label="Open the link in a new window" href="https://www.mapbox.com/legal/privacy">Mabox</a></li>
+						<li><a className='underline' target='_blank' aria-label="Open the link in a new window" href="https://www.amity.co/legal/privacy-policy">Amity</a></li>
 					</ul>
 					<h3>Use of Your Personal Data</h3>
 					<p>The Company may use Personal Data for the following purposes:</p>

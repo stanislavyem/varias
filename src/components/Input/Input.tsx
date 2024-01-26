@@ -13,6 +13,8 @@ interface IInput {
 	required?: boolean
 	datalist?: string[]
 	placeholder?: string
+	description?: string
+	describedBy?: string
 }
 
 export interface IInputFunctions {
@@ -26,7 +28,7 @@ export interface IInputFunctions {
 
 
 //input block, with integrated check for errors, supports different types of input, has methods for getting error
-const Input = forwardRef<IInputFunctions, IInput>(({labelText, datalist, name, id, inputType="text", required, valueType="skip", placeholder}, ref): JSX.Element => {
+const Input = forwardRef<IInputFunctions, IInput>(({labelText, datalist, name, id, inputType="text", required, valueType="skip", placeholder, description, describedBy}, ref): JSX.Element => {
     useImperativeHandle(ref, () => ({
         getValue() {
             return _input.current?.value 
@@ -76,7 +78,9 @@ const Input = forwardRef<IInputFunctions, IInput>(({labelText, datalist, name, i
 				<input 
 					ref={_input}
 					data-selector="input"
-					aria-describedby={`${id}_error`}
+					{...(description ? { 'aria-label': description } : {})}
+					{...(describedBy ? { 'aria-describedby': describedBy } : {})}
+					{...(error ? { 'aria-describedby': `${id}_error` } : {})}
 					className="input-element" 
 					id={id} 
 					type={inputType} 
@@ -84,15 +88,15 @@ const Input = forwardRef<IInputFunctions, IInput>(({labelText, datalist, name, i
 					onBlur={onBlurInput} 
 					list={`${id}-datalist`}
 					onKeyPress={onKeyPressed}
-					placeholder={placeholder}
+					{...(placeholder ? { 'placeholder': placeholder } : {})}
 					/>
-				{datalist && datalist.length > 0 && 
+				{/* {datalist && datalist.length > 0 && 
 					<datalist id={`${id}-datalist`}>
 						{datalist.map(item => (<option key={item} value={item} />))}
-					</datalist>}
+					</datalist>} */}
 				{svgs(error ? 'show' : '').iconExclamation}
 			</div>
-			{error && <span id={`${id}_error`} aria-description='Error in this field' data-content="errorText">{`${error}`}</span>}	
+			{error && <span id={`${id}_error`} aria-description='Error in this input' data-content="errorText">{`${error}`}</span>}	
 		</div>
 	)
 })

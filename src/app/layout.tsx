@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 		default: 'DateMarks',
 		template: '%s | DateMarks'
 	},
+	
 	description: "Datemarks - app for create and attend events",
 	keywords: ['DateMarks', 'meetings', 'events'],
 	authors: [{ name: 'Stas Yem', url: 'https://StasYem.com' }, { name: 'Max', url: 'https://postnikov.dev' }],
@@ -24,11 +25,12 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 	return (
 		<html lang="en">
 			<body className="flex flex-col min-h-dvh">
+				<div id="skiper"><a href="#maincontent">Skip to main content</a></div>
 				<Context>
 					<Homer />
 					<ModalWrapper />
 					<Header />
-					<main>
+					<main id='#maincontent'>
 						{children}
 					</main>
 					<Footer />

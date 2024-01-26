@@ -49,6 +49,7 @@
 		justify-content: center;
 		gap: 20px;
 		margin-top: 20px;
+		color: var(--primary_text);
 
 		@include respond-to(sm) {
 			gap: 30px;

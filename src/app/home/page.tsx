@@ -8,6 +8,7 @@ import SectionCreateEvents from '@/components/Sections/CreateEvents/CreateEvents
 const Home = () => {
 	return (
 		<>
+			<h1 className='sr-only'>Datemark app</h1>
 			<SectionCreateEvents />	
 			<SectionMarkets />
 			<SectionDiscover />

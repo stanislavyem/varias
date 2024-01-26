@@ -47,6 +47,10 @@ footer {
 				margin-top: 0;
 				padding: 0;
 			}
+
+			& a {
+				color: var(--text_reverse);
+			}
 	
 			.img-wrapper {
 				height: 45px;
@@ -83,7 +87,23 @@ footer {
 			@include respond-to(md) {
 				font-size: 16px;
 			}
+
 		}
+
+		[role="navigation"] {
+			margin-top: 3px;
+			display: flex;
+			color: var(--text_reverse);
+			justify-content: center;
+			align-items: center;
+			gap: 10px;
+
+		}
+		
+		a {
+			text-decoration: underline;
+		}
+
 	}
 
 	.copyright {
@@ -91,6 +111,10 @@ footer {
 			font-size: 12px;
 			color: var(--text_reverse);
 			text-align: center;
+		}
+
+		a {
+			text-decoration: underline;
 		}
 	}
 }
