@@ -1,6 +1,6 @@
 {
-  "name": "DateMarks",
-  "version": "0.1.0",
+  "name": "Datemarks",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "set NEXT_PUBLIC_APP_ENV=development && next dev -p 3200",
