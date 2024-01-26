@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "set NEXT_PUBLIC_APP_ENV=development && next dev",
+    "dev": "set NEXT_PUBLIC_APP_ENV=development && next dev -p 3200",
     "build": "set NEXT_PUBLIC_APP_ENV=production && next build",
     "start": "set NEXT_PUBLIC_APP_ENV=production && npx serve@latest out",
     "lint": "next lint",

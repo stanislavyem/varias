@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 		default: 'DateMarks',
 		template: '%s | DateMarks'
 	},
-	description: "",
+	description: "Datemarks - app for create and attend events",
 	keywords: ['DateMarks', 'meetings', 'events'],
 	authors: [{ name: 'Stas Yem', url: 'https://StasYem.com' }, { name: 'Max', url: 'https://postnikov.dev' }],
 	creator: 'Max Postnikov | https://postnikov.dev',

@@ -1,9 +1,9 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/mobiles_1.png" 
+import image1 from "../../../assets/images/mobiles_1.webp" 
 import './markets.scss'
 import InfoMarkets from '@/components/Blocks/InfoMarkets/InfoMarkets'
-import appStore from '../../../assets/images/app_store.png'
-import playMarket from '../../../assets/images/play_market.png'
+import appStore from '../../../assets/images/app_store.webp'
+import playMarket from '../../../assets/images/play_market.webp'
 
 
 const SectionMarkets = () => {
