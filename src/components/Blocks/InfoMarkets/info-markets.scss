@@ -9,9 +9,9 @@
 		margin-bottom: 35px;
 		order: -1;
 		display: none;
+		text-align: left;
 		
-		@include respond-to(lg) {
-			text-align: left;
+		@include respond-to(md) {
 			display: initial;
 		}
 	}
@@ -22,16 +22,17 @@
 		margin-top: 15px;
 
 		@include respond-to(xs) {
-			font-size: 1.3rem;
+			font-size: 1.2rem;
 			margin-top: 20px;
 		}
 		@include respond-to(md) {
+			font-size: 1.3rem;
 			margin-top: 25px;
-			font-size: 1.6rem;
+			text-align: left;
 		}
 		@include respond-to(lg) {
+			// font-size: 1.3rem;
 			margin-top: 30px;
-			text-align: left;
 		}
 	
 	
@@ -56,10 +57,10 @@
 
 		@include respond-to(md) {
 			margin-top: 20px;
+			justify-content: flex-start;
 		}
 
 		@include respond-to(lg) {
-			justify-content: flex-start;
 		}
 
 		img {

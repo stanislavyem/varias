@@ -6,23 +6,21 @@ section.section_markets{
 	.section_markets__header.section_markets__header {
 		text-align: center;
 		align-self: center;	
-		font-size: 2rem;
+		// font-size: 2rem;
+		font-size: 1.5rem;
 		color: var(--primary_text);
 		font-weight: 700;
 		padding-left: 40px;
 		padding-right: 40px;
 		
 		@include respond-to(sm) {
-			font-size: 2.5rem;
+			 font-size: 2rem;
 			margin-bottom: 2rem;
 		}
 		
 		@include respond-to(md) {
-			font-size: 2.5rem;
+			font-size: 2.7rem;
 			margin-bottom: 4.5rem;
-		}
-
-		@include respond-to(lg) {
 			display: none;
 		}
 	}

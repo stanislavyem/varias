@@ -6,10 +6,18 @@ $sm: 640px;
 $xs: 480px;
 
 $container_width: 1140px; // content part, w/o paddings
-$padding: 14px;
-$padding_xs: 20px;
-$padding_sm: 24px;
-$padding_md: 30px;
+
+$padding: 16px;
+$padding_xs: 24px;
+$padding_sm: 32px;
+$padding_md: 40px;
+$padding_lg: 50px;
+
+// $section_hmin: 400px;
+// $section_hmin_xs: 400px;
+// $section_hmin_sm: 400px;
+// $section_hmin_md: 400px;
+// $section_hmin_lg: 400px;
 
 
 $black: #000;
@@ -46,6 +54,9 @@ body {
 	--nav: #000;
 	--nav_selected: #000;
 
+	--input_incorrect: #F00;
+
+	--focus: #777;
 
 	--lang_text: #EEE;
 	--lang_text_hover: #222;
@@ -54,7 +65,7 @@ body {
 	--lang_bg_hover: #DDD;
 	--lang_bg_selected: #FFF;
 
-	--modal_bg: rgba(34, 34, 34, 0.95);
+	--modal_bg: rgba(34, 34, 34, 0.75);
 	--modal_closer: #979797;
 	--modal_closer_hover: #FFF;
 }

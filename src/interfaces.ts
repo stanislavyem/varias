@@ -19,7 +19,7 @@ export interface INavItem {
 }
 
 
-export type TInputTypes = 'name' | 'letters' | 'letters+' | 'email' | 'any' | 'numbers' |'numbers+'
+export type TInputValueTypes = 'name' | 'email' | 'password' | 'skip' // 'letters' | 'letters+' | 'any' | 'numbers' |'numbers+'
 //numbers: 0-9
 //numbers+: 0-9,(),+,-
 //letters: letters

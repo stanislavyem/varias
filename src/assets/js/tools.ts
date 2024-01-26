@@ -1,5 +1,5 @@
-import { TInputTypes, TLang } from "@/interfaces"
-import { screenNames, screenSizes } from "./consts"
+import { TInputValueTypes, TLang } from "@/interfaces"
+import { inputPolicies, screenNames, screenSizes } from "./consts"
 
 export const makeImageSizes = (params: Partial<Record<typeof screenNames[number], string>>): string => {
 	return screenNames
@@ -112,17 +112,22 @@ export const lockFocusInside = ({ _parentElement, initialFocused = 0, returnFocu
 
 interface IInputChecker {
     value: string
-    type: TInputTypes //check type
-	lang: TLang
+    valueType: TInputValueTypes //check type
+	lang?: TLang
 }
 
 
 //get value and value type for checking
-export const inputChecker = ({ value, type, lang }: IInputChecker): string | null => {
-    if (type === 'name') {
-        if (value.length === 0) return lang === 'en' ? 'Please enter the name' : 'FR Please enter the name'
-        if (value.length > 60) return lang === 'en' ? 'Name is too long, please check' : 'FR Name is too long, please check'
-        if (!/^[a-zA-Z\- ]*$/.test(value)) return lang === 'en' ? 'Please use only latin letters or "-"' : 'FR Please use only latin letters or "-"'
+export const inputChecker = ({ value, valueType, lang='en' }: IInputChecker): string | null => {
+    if (valueType === 'name') {
+        if (value.length < inputPolicies.name.length.min) return lang === 'en' ? 'Name is too short' : 'FR Please enter the name'
+        if (value.length > inputPolicies.name.length.max) return lang === 'en' ? 'Name is too long' : 'FR Name is too long, please check'
+        if (!/^[a-zA-Z\- ]*$/.test(value)) return lang === 'en' ? 'Only latin letters or "-"' : 'FR Please use only latin letters or "-"'
+    }
+    if (valueType === 'email') {
+        if (value.length < inputPolicies.email.length.min) return lang === 'en' ? 'Email is too short' : 'FR Please enter the name'
+        if (value.length > inputPolicies.email.length.max) return lang === 'en' ? 'Email is too long' : 'FR Name is too long, please check'
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+[^.]$/.test(value)) return lang === 'en' ? 'Please type valid email' : 'FR Please use only latin letters or "-"'
     }
     // if (type === 'country') {
     //     if (value.length < 2) return 'Please enter the country'
