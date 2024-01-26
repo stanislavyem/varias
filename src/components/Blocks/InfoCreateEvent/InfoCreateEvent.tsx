@@ -108,8 +108,9 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 					valueType='email'
 					id='email'
 					placeholder='Your email'
+					description='Enter your email to subscribe'
 				/>
-				<button className='button_square' type='submit'>Start</button>
+				<button className='button_square' type='submit' aria-label='Click to send your email'>Start</button>
 			</form>
 			<p>By signing up, you agree to the <Link href={linkTerms}>Terms</Link> and <Link href={linkPrivacy}>Privacy Policy</Link>.</p>
 		</div>
