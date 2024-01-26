@@ -1,7 +1,7 @@
 @import "../../../assets/css/mixins.scss";
 
 section.section_markets{
-	background: linear-gradient(var(--section_1_start), var(--section_1_end));
+	background: linear-gradient(var(--section_1_end), var(--section_2));
 
 	.section_markets__header.section_markets__header {
 		text-align: center;

@@ -20,7 +20,7 @@ const InfoMarkets: React.FC<IInfoMarkets> = ({header, text, links}):JSX.Element 
 			<div className="links">
 				{links.map(item => {
 					return (
-						<Link href={item.href} key={item.href} target='_blank'>
+						<Link href={item.href} key={item.href} target='_blank' aria-label={item.alt}>
 							<Image 
 								src={item.src}
 								alt={item.alt}

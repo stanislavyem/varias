@@ -61,18 +61,15 @@ h1 {
 	font-size: 1.5rem;
 	color: var(--primary_text);
 	font-weight: 700;
-	// line-height: 1.8rem;
 	
 	@include respond-to(sm) {
 		font-size: 2rem;
 		margin-bottom: 2rem;
-		// line-height: 2.375rem;
 	}
 	
 	@include respond-to(md) {
 		font-size: 2.5rem;
 		margin-bottom: 4.5rem;
-		// line-height: 3rem;
 	}
 }
 
@@ -82,27 +79,23 @@ h2 {
 	margin-top: 2rem;
 	color: var(--primary_text);
 	font-weight: 700;
-	// line-height: 1.5rem;
 	
 	@include respond-to(sm) {
 		font-size: 1.5rem;
 		margin-top: 2.2rem;
 		margin-bottom: 1.4rem;
-		// line-height: 1.8rem;
 	}
 	
 	@include respond-to(md) {
 		font-size: 1.75rem;
 		margin-top: 2.7rem;
 		margin-bottom: 1.65rem;
-		// line-height: 2.4rem;
 	}
 
 	@include respond-to(lg) {
 		font-size: 2rem;
 		margin-top: 3rem;
 		margin-bottom: 1.75rem;
-		// line-height: 2.4rem;
 	}
 }
 
@@ -150,30 +143,21 @@ h4 {
 
 p {
 	font-size: .875rem;
-	//text-indent: 2rem;
 	color: var(--primary_text);
-	//text-align: justify;
-	// line-height: 1.05rem;
 	margin-top: .5rem;
 
 	@include respond-to(sm) {
 		font-size: 1rem;
-		//text-indent: 2.5rem;
-		// line-height: 1.2rem;
 		margin-top: .65rem;
 	}
 
 	@include respond-to(md) {
 		font-size: 1.125rem;
-		// line-height: 1.5rem;
-		//text-indent: 3rem;
 		margin-top: .72rem;
 	}
 
 	@include respond-to(lg) {
 		font-size: 1.25rem;
-		// line-height: 1.5rem;
-		//text-indent: 3rem;
 		margin-top: .8rem;
 	}
 
@@ -190,28 +174,21 @@ button, .button {
 
 
 ol, ul {
-	// padding-left:0; 
 	list-style-position: outside; 
 	margin-left: 1rem;
 	font-size: .875rem;
 	color: var(--primary_text);
-	//text-align: justify;
-	// line-height: 1.05rem;
 	margin-top: .65rem;
 
 	@include respond-to(sm) {
 		font-size: 1rem;
 		margin-left: 1.125rem;
-		//text-indent: 2.5rem;
-		// line-height: 1.2rem;
 		margin-top: .8rem;
 	}
 
 	@include respond-to(md) {
 		margin-left: 1.5rem;
 		font-size: 1.25rem;
-		// line-height: 1.5rem;
-		//text-indent: 3rem;
 		margin-top: 1rem;
 	}
 
@@ -249,7 +226,7 @@ ul {
 
 
 section {
-	min-height: min(80vh, 650px);
+	min-height: min(80vh, 350px);
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
@@ -259,8 +236,8 @@ section {
 
 
 	& .section__content {
-		//padding-top: 50px;
-		padding-bottom: 100px;
+		padding-bottom: 50px;
+		padding-top: 50px;
 		width: 100%;
 		display: flex;
 		flex-direction: column;
@@ -268,13 +245,11 @@ section {
 	}
 
 	&:nth-of-type(1) {
-		// margin-top: -80px;
 		padding-top: 80px;
 		background: linear-gradient(var(--section_1_start), var(--section_1_end));
 
 		.section__content {
 			padding-top: 20px;
-			// margin-bottom: auto;
 
 			@include respond-to(sm) {
 				padding-top: 30px;
@@ -285,21 +260,11 @@ section {
 			}
 		}
 
-	// &.section_text {
-	// 	.section__content {
-	// 		display: flex;
-	// 		align-items: center;
-	// 		// margin-top: 50px;
-	// 		// margin-bottom: auto;
+	}
 
-	// 		// @include respond-to(sm) {
-	// 		// 	margin-top: 60px;
-	// 		// }
 
-	// 		// @include respond-to(md) {
-	// 		// 	margin-top: 80px;
-	// 		// }
-	// 	}
+	&:nth-last-of-type(1) {
+		padding-bottom: 100px;
 	}
 }
 
