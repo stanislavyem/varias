@@ -12,12 +12,12 @@ const SectionConnected = () => {
 					<BlockInfo 
 						img={{
 							src: image1, 
-							alt: '!!!',
+							alt: 'Peolpe use mobile phones to communicate with each other',
 							pos: 'rt'
 						}}
 					>
 						<InfoText
-							header="Header"
+							header="Features"
 							text={[
 								"Stay connected with fellow event-goers through our real-time messaging feature. Discuss event details, share recommendations, and build a vibrant community around your shared interests.", 
 							]}

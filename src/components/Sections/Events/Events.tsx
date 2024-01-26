@@ -12,12 +12,12 @@ const SectionEvents = () => {
 					<BlockInfo 
 						img={{
 							src: image1, 
-							alt: '!!!',
+							alt: 'Woman is creating events',
 							pos: 'lt'
 						}}
 					>
 						<InfoText 
-							header="Header"
+							header="Partners"
 							text={[
 								"Explore curated events from our trusted partners and local businesses", 
 							]}

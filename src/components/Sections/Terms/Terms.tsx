@@ -55,7 +55,7 @@ const SectionTerms = () => {
 						<li>We may consider and approve in our sole discretion other link requests from the following types of organizations:
 							<ol className='ol_letters'>
 								<li>commonly-known consumer and/or business information sources such as Chambers of Commerce, American Automobile Association, AARP and Consumers Union;</li>
-								<li><a  className="underline" target='_blank' href="http://dot.com">http://dot.com</a> community sites;</li>
+								<li><a  className="underline" target='_blank' aria-label="Open the link to dot.com in a new window" href="http://dot.com">http://dot.com</a> community sites;</li>
 								<li>associations or other groups representing charities, including charity giving sites,</li>
 								<li>online directory distributors;</li>
 								<li>internet portals;</li>

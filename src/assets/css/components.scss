@@ -271,3 +271,38 @@ section {
 section:only-child {
 	min-height: 100%;
  }
+
+
+.sr-only {
+	position:absolute;
+	left:-10000px;
+	top:auto;
+	width:1px;
+	height:1px;
+	overflow:hidden;
+}
+
+#skiper {
+	a {
+		//padding: 5px;
+		background-color: #fff;
+		position: fixed;
+		left:0px;
+		top:0px;
+		// width:1px;
+		//height:1px;
+		overflow:hidden;
+		transition: transform $transition_fast;
+		font-size: 1.5rem;
+		transform: scale(0.00001);
+	
+	
+		&:focus {
+			z-index: 5000;
+			transform: scale(1);
+			// width:auto;
+			// height:auto;
+		}
+	}
+	 
+}
