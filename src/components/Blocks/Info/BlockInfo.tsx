@@ -23,6 +23,7 @@ const BlockInfo: React.FC<IBlockInfo> = ({children, img}): JSX.Element => {
 					<Image 
 						src={img.src}
 						alt={img.alt}
+						loading='eager'
 					/>
 				</div>
 			</div>
