@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "set NEXT_PUBLIC_APP_ENV=development && next dev",
+    "build": "set NEXT_PUBLIC_APP_ENV=production && next build",
+    "start": "set NEXT_PUBLIC_APP_ENV=production && npx serve@latest out",
     "lint": "next lint",
     "export": "next export"
   },
   "dependencies": {
+    "dotenv": "^16.4.1",
     "next": "14.0.4",
     "next-auth": "^4.24.5",
     "react": "^18",

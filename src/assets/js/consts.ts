@@ -1,4 +1,4 @@
-import { TInputTypes } from "@/interfaces"
+import { TInputValueTypes } from "@/interfaces"
 
 export const scrollThreshold = 1; //in screen heights
 
@@ -23,21 +23,21 @@ interface IInputFilter {
 		min: number,
 		max: number
 	},
-	type: TInputTypes
+	type: TInputValueTypes
 } 
 
-export const inputFilters: Record<string, IInputFilter> = {
+export const inputPolicies: Record<string, IInputFilter> = {
 	name: {
 		length: {
 			min: 2,
 			max: 60
 		},
-		type: 'letters+'
+		type: 'name'
 	},
 	email: {
 		length: {
 			min: 6,
-			max: 90
+			max: 100
 		},
 		type: 'email'
 	},
@@ -46,7 +46,14 @@ export const inputFilters: Record<string, IInputFilter> = {
 			min: 20,
 			max: 5000
 		},
-		type: 'any'
+		type: 'skip'
+	},
+	password: {
+		length: {
+			min: 8,
+			max: 30
+		},
+		type: 'password'
 	}
 }
 

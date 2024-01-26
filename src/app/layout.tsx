@@ -7,6 +7,7 @@ import ModalWrapper from "@/components/ModalWrapper/ModalWrapper";
 import Homer from "@/components/Homer/Homer";
 
 
+
 export const metadata: Metadata = {
 	title: {
 		default: 'DateMarks',

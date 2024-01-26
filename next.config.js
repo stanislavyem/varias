@@ -12,6 +12,16 @@ if (isGithubActions) {
 }
 
 
+// const mode = process.env.NODE_ENV?.trim() || 'development';
+
+// const pathToEnv = `.env.${mode}`.trim()
+// require('dotenv').config({
+//     path: pathToEnv,
+// })
+// console.log('ENV mode: ', pathToEnv);
+// console.log('Port: ', process.env.PORT);
+
+
 
 const nextConfig = {
 	// images: {

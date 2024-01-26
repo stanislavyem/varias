@@ -19,6 +19,8 @@ jobs:
           node-version: 20
           cache: npm
       - name: Build
+        env:
+          NEXT_PUBLIC_URL_BACKEND: ${{ secrets.BACK_URL }}
         run: |
           npm i
           npm run build
