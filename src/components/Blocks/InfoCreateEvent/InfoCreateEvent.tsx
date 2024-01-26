@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import './info-create-event.scss'
-import { linkPrivacy, linkTerms } from '@/assets/js/consts'
+import { linkPrivacy, linkTerms, requests } from '@/assets/js/consts'
 import Input, { IInputFunctions } from '@/components/Input/Input'
 import { useRef } from 'react'
 import { useAppContext } from '@/hooks/useAppContext'
@@ -41,9 +41,9 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		//async send data
 		try {
 			const email = _email.current?.getValue()
-			const response: Response = await fetch(process.env.NEXT_PUBLIC_URL_BACKEND || '', {
+			const response: Response = await fetch(requests.sendEmail.url, {
                 //signal: controller.signal,
-                method: 'POST',
+                method: requests.sendEmail.method,
                 headers: {
                     "Content-Type": 'application/json',
                 },
@@ -110,7 +110,7 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 					placeholder='Your email'
 					description='Enter your email to subscribe'
 				/>
-				<button className='button_square' type='submit' aria-label='Click to send your email'>Start</button>
+				<button className='button_square' type='submit'>Start</button>
 			</form>
 			<p>By signing up, you agree to the <Link href={linkTerms}>Terms</Link> and <Link href={linkPrivacy}>Privacy Policy</Link>.</p>
 		</div>
