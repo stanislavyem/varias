@@ -72,6 +72,9 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 				}
 
 
+
+
+
 		//send data
 		try {
 			const response: Response = await fetch(requests.sendEmail.url, {
