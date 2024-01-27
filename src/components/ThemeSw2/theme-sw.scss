@@ -1,4 +1,5 @@
-@use "../../assets/css/mixins.scss" as *;
+@import "../../assets/css/variables.scss" ;
+@import "../../assets/css/mixins.scss";
 
 $height: 50px;
 $width: 100px;

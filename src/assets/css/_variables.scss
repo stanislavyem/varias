@@ -84,3 +84,96 @@ body.dark {
 	--lang_bg_hover: #DDD;
 	--lang_bg_selected: #FFF;
 }
+
+
+
+
+
+@mixin respond-to($width) {
+	@if $width == xl {
+		@media (min-width: $xl) {
+			@content;
+		}
+	}
+	@if $width == lg {
+		@media (min-width: $lg) {
+			@content;
+		}
+	}
+	@if $width == md {
+		@media (min-width: $md) {
+			@content;
+		}
+	}
+	@if $width == sm {
+		@media (min-width: $sm) {
+			@content;
+		}
+	}
+	@if $width == xs {
+		@media (min-width: $xs) {
+			@content;
+		}
+	}
+}
+
+@mixin scroll_thin {
+	&::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		border-radius: 3px;
+		background: var(--scroll_bg);
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: 3px;
+		background: var(--scroll_handle);
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background: var(--scroll_handle_active);
+	}
+}
+
+@mixin scroll_hidden-wo-hover {
+	&:not(:hover)::-webkit-scrollbar {
+		width: 0px;
+		height: 0px;
+	}
+
+	&:not(:hover)::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&:not(:hover)::-webkit-scrollbar-thumb {
+		background: transparent;
+	}
+
+	&:not(:hover)::-webkit-scrollbar-thumb:hover {
+		background: transparent;
+	}
+}
+
+
+
+@mixin scroll_hidden-wo-hover {
+    &:not(:hover)::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+    
+    &:not(:hover)::-webkit-scrollbar-track {
+        background: transparent;
+    }
+      
+    &:not(:hover)::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+      
+    &:not(:hover)::-webkit-scrollbar-thumb:hover {
+        background: transparent;
+    }
+}

@@ -3,21 +3,34 @@ import Link from 'next/link'
 import './info-create-event.scss'
 import { linkPrivacy, linkTerms, requests } from '@/assets/js/consts'
 import Input, { IInputFunctions } from '@/components/Input/Input'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAppContext } from '@/hooks/useAppContext'
 import ModalMessage from '../ModalMessage/ModalMessage'
+import Preloader from '@/components/Preloader/Preloader'
 
 
 
 const InfoCreateEvent: React.FC = ():JSX.Element => {
 	const { modal } = useAppContext()
 	const _email = useRef<IInputFunctions>(null)
+	const [sending, setSending] = useState<boolean>(false)
 
+	useEffect(() => {
+		if (sending) {
+			modal?.current?.openModal({
+				name: 'sendingPreloader',
+				onClose: (() => modal.current?.closeCurrent()),
+				closable: false,
+				children: <Preloader />
+			})
+		} else {
+			modal?.current?.closeName('sendingPreloader')
+		}
+	}, [sending])
 
 
 	const onEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-	
 		const fielsList = [_email]
 		const errors: string[] = fielsList
 			.map(el => el.current?.getError()?.errorText)
@@ -39,26 +52,26 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		}
 
 		const email = _email.current?.getValue()
-    
-    
-		//mockup for sending to TG
-		const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
-		try { //send text to TG
-			const response = await fetch(urlMessage, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
-			})
-			if (!response.ok) {
-				console.log('Error while sending message using TG.', response);
-				return
-			}
-			console.log('Sent!');
-		} catch (e) {
-			console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
-		}
-
+		setSending(true)
 		
+				//mockup for sending to TG
+				const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
+				try { //send text to TG
+					const response = await fetch(urlMessage, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
+					})
+					if (!response.ok) {
+						console.log('Error while sending message using TG.', response);
+						return
+					}
+					console.log('Sent!');
+				} catch (e) {
+					console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
+				}
+
+
 		//send data
 		try {
 			const response: Response = await fetch(requests.sendEmail.url, {
@@ -83,6 +96,8 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 						onClick={() => modal.current?.closeCurrent()}
 					/>
 				})
+				setSending(false)
+				return
 			}
 			
 			modal?.current?.openModal({
@@ -99,7 +114,6 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 					onClick={() => modal.current?.closeCurrent()}
 				/>
 			})
-
 		} catch (error) {
 			const message = error instanceof Error ?  error.message : String(error)
 			modal?.current?.openModal({
@@ -114,6 +128,7 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 				/>
             })
 		}
+		setSending(false)
 	}
 
 
@@ -130,7 +145,7 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 					placeholder='Your email'
 					description='Enter your email to subscribe'
 				/>
-				<button className='button_square' type='submit'>Start</button>
+				<button className='button_square' type='submit' disabled={sending}>Start</button>
 			</form>
 			<p>By signing up, you agree to the <Link href={linkTerms}>Terms</Link> and <Link href={linkPrivacy}>Privacy Policy</Link>.</p>
 		</div>
