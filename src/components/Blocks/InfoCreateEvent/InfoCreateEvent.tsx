@@ -39,7 +39,8 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		}
 
 		const email = _email.current?.getValue()
-
+    
+    
 		//mockup for sending to TG
 		const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
 		try { //send text to TG
@@ -53,12 +54,12 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 				return
 			}
 			console.log('Sent!');
-			
 		} catch (e) {
 			console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
 		}
 
 		//send data
+
 		try {
 			const response: Response = await fetch(requests.sendEmail.url, {
                 //signal: controller.signal,
