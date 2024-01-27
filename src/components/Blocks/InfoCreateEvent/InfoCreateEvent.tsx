@@ -58,8 +58,8 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 			console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
 		}
 
+		
 		//send data
-
 		try {
 			const response: Response = await fetch(requests.sendEmail.url, {
                 //signal: controller.signal,
