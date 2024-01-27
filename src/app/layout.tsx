@@ -27,10 +27,13 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 				<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 				<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-				<link rel="manifest" href="/site.webmanifest" />
+				<link rel="manifest" href="./Datemarks/manifest.json"/>
 				<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#0e7040" />
 				<meta name="msapplication-TileColor" content="#0e7040" />
 				<meta name="theme-color" content="#0e7040" />
+				<link rel="preload" href="../assets/fonts/Inter-Regular.woff2" as="font" type="font/woff2" />
+				<link rel="preload" href="../assets/fonts/Inter-SemiBold.woff2" as="font" type="font/woff2" />
+				<link rel="preload" href="../assets/fonts/Inter-Bold.woff2" as="font" type="font/woff2" />
 			</head>
 			<body className="flex flex-col min-h-dvh">
 				<div id="skiper"><a href="#maincontent" role='button'>Skip to main content</a></div>
