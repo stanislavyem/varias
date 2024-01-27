@@ -12,7 +12,7 @@ const SectionAbout = () => {
 		<section className='section_about section_text'>
 			<div className="section__content">
 				<div className="container_page container_content">
-					<h1>{lang === 'en' ? 'About Us' : 'FR About Us'}</h1>
+					<h1>{lang === 'en' ? 'About Datemarks' : 'FR About Us'}</h1>
 					<BlockInfo 
 						img={{
 							src: image1, 
