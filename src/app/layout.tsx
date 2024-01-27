@@ -37,7 +37,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 			</head>
 			<body className="flex flex-col min-h-dvh">
 				<div id="skiper"><a href="#maincontent" role='button'>Skip to main content</a></div>
-				<Context>
+				<Context> 
 					<Homer />
 					<ModalWrapper />
 					<Header />
