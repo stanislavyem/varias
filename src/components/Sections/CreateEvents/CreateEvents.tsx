@@ -1,6 +1,6 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
 import image1 from "../../../assets/images/logo_1.svg"
-import './create-events.scss'
+import './_create-events.scss'
 import InfoCreateEvent from '@/components/Blocks/InfoCreateEvent/InfoCreateEvent'
 
 
