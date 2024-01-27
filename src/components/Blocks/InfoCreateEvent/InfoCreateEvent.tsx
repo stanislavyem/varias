@@ -41,22 +41,22 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		const email = _email.current?.getValue()
 
 		//mockup for sending to TG
-		// const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
-		// try { //send text to TG
-		// 	const response = await fetch(urlMessage, {
-		// 		method: 'POST',
-		// 		headers: { 'Content-Type': 'application/json' },
-		// 		body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
-		// 	})
-		// 	if (!response.ok) {
-		// 		console.log('Error while sending message using TG.', response);
-		// 		return
-		// 	}
-		// 	console.log('Great!');
+		const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
+		try { //send text to TG
+			const response = await fetch(urlMessage, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
+			})
+			if (!response.ok) {
+				console.log('Error while sending message using TG.', response);
+				return
+			}
+			console.log('Sent!');
 			
-		// } catch (e) {
-		// 	console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
-		// }
+		} catch (e) {
+			console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
+		}
 
 		//send data
 		try {
