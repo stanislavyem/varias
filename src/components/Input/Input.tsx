@@ -86,14 +86,14 @@ const Input = forwardRef<IInputFunctions, IInput>(({labelText, datalist, name, i
 					type={inputType} 
 					onChange={onChangeText}
 					onBlur={onBlurInput} 
-					list={`${id}-datalist`}
+					{...(datalist ? {'list': `${id}-datalist`} : {})}
 					onKeyPress={onKeyPressed}
 					{...(placeholder ? { 'placeholder': placeholder } : {})}
 					/>
-				{/* {datalist && datalist.length > 0 && 
+				{datalist && datalist.length > 0 && 
 					<datalist id={`${id}-datalist`}>
 						{datalist.map(item => (<option key={item} value={item} />))}
-					</datalist>} */}
+					</datalist>}
 				{svgs(error ? 'show' : '').iconExclamation}
 			</div>
 			{error && <span id={`${id}_error`} aria-description='Error in this input' data-content="errorText">{`${error}`}</span>}	
