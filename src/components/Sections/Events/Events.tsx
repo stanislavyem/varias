@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/events_1.svg"
+import onboarding2 from "../../../assets/images/on_boarding_2.svg"
 import './events.scss'
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
@@ -11,15 +11,15 @@ const SectionEvents = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: image1, 
-							alt: 'Woman is creating events',
+							src: onboarding2, 
+							alt: 'Chat to talk to event participants',
 							pos: 'lt'
 						}}
 					>
 						<InfoText 
-							header="Partners"
+							header="Chat Now"
 							text={[
-								"Explore curated events from our trusted partners and local businesses", 
+								"Connect instantly with other who share your interests.", 
 							]}
 						/>
 					</BlockInfo>
