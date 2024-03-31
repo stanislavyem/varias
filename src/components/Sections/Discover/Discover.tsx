@@ -1,6 +1,6 @@
 import './discover.scss'
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/discover_1.svg"
+import onboarding1 from "../../../assets/images/on_boarding_1.svg"
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
 
@@ -12,15 +12,15 @@ const SectionDiscover = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: image1, 
-							alt: 'Man is swiping image right',
+							src: onboarding1, 
+							alt: 'Screen to swipe on events',
 							pos: 'rt'
 						}}
 					>
 						<InfoText 
-							header="Header"
+							header="Discover Events"
 							text={[
-								"Easily discover  exciting events by swiping  right to express interest or left to explore more options", 
+								"Discover exiting events by swiping right to express interest or left to explore more options.", 
 							]}
 						/>
 					</BlockInfo>

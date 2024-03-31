@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/connected_1.svg"
+import onboarding2 from "../../../assets/images/on_boarding_3.svg"
 import './connected.scss'
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
@@ -11,15 +11,15 @@ const SectionConnected = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: image1, 
-							alt: 'Peolpe use mobile phones to communicate with each other',
+							src: onboarding2, 
+							alt: 'Datemarks is for meeting people in real life',
 							pos: 'rt'
 						}}
 					>
 						<InfoText
-							header="Features"
+							header="Meet People"
 							text={[
-								"Stay connected with fellow event-goers through our real-time messaging feature. Discuss event details, share recommendations, and build a vibrant community around your shared interests.", 
+								"Join events and meet new people in real life.", 
 							]}
 						/>
 					</BlockInfo>

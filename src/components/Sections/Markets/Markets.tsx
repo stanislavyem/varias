@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/mobiles_1.webp" 
+import image1 from "../../../assets/images/demo.webp" 
 import './markets.scss'
 import InfoMarkets from '@/components/Blocks/InfoMarkets/InfoMarkets'
 import appStore from '../../../assets/images/app_store.webp'

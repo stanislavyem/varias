@@ -14,7 +14,7 @@ const Header = () => {
 	return (
 		<header>
 			<div className="container_page container_content header__content">
-				<Link className='header__company' href={linkHome}>Datemarks</Link>
+				<Link className='header__company' href={linkHome}>datemarks</Link>
 				{/* <div className="logo-wrapper mr-auto relative">
 					<Link href={homeLink}>
 						<Image 
