@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import logo from "../../../assets/images/ic_app_logo.png"
+import logo from "../../../assets/images/ic_app_logo.svg"
 import './_create-events.scss'
 import InfoCreateEvent from '@/components/Blocks/InfoCreateEvent/InfoCreateEvent'
 
