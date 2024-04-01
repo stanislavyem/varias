@@ -35,7 +35,6 @@ const nextConfig = {
 	// },
 	assetPrefix: assetPrefix,
 	basePath: basePath,
-	output: "export",
 	images: {
 		unoptimized: true,
 	},
