@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "set NEXT_PUBLIC_APP_ENV=development && next dev -p 3200",
-    "build": "set NEXT_PUBLIC_APP_ENV=production && next build",
-    "start": "set NEXT_PUBLIC_APP_ENV=production && npx serve@latest out",
-    "lint": "next lint",
     "replaceFilePaths": "node replacer.js",
-    "export": "next build && npm run replaceFilePaths && next export"
+    "dev": "set NEXT_PUBLIC_APP_ENV=development && next dev -p 3200",
+    "build": "set NEXT_PUBLIC_APP_ENV=production && next build && npm run replaceFilePaths",
+    "start": "set NEXT_PUBLIC_APP_ENV=production && npx serve@latest out",
+    "lint": "next lint"
   },
   "dependencies": {
     "dotenv": "^16.4.1",
