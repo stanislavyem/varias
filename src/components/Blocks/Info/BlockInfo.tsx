@@ -23,6 +23,8 @@ const BlockInfo: React.FC<IBlockInfo> = ({children, img}): JSX.Element => {
 					<Image 
 						src={img.src}
 						alt={img.alt}
+						width={100}
+						height={100}
 					/>
 				</div>
 			</div>
