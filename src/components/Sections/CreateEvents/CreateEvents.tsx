@@ -12,7 +12,7 @@ const SectionCreateEvents = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: logo.scr, 
+							src: logo, 
 							alt: '!!!',
 							pos: 'rt'
 						}}

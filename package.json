@@ -7,7 +7,8 @@
     "build": "set NEXT_PUBLIC_APP_ENV=production && next build",
     "start": "set NEXT_PUBLIC_APP_ENV=production && npx serve@latest out",
     "lint": "next lint",
-    "export": "next export"
+    "replaceFilePaths": "node replacer.js",
+    "export": "next build && npm run replaceFilePaths && next export"
   },
   "dependencies": {
     "dotenv": "^16.4.1",
@@ -15,6 +16,7 @@
     "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
+    "replace-in-file": "^7.1.0",
     "sass": "^1.69.7"
   },
   "devDependencies": {
