@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/logo_1.svg"
+import logo from "../../../assets/images/ic_app_logo.svg"
 import './_create-events.scss'
 import InfoCreateEvent from '@/components/Blocks/InfoCreateEvent/InfoCreateEvent'
 
@@ -12,7 +12,7 @@ const SectionCreateEvents = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: image1, 
+							src: logo, 
 							alt: '!!!',
 							pos: 'rt'
 						}}
