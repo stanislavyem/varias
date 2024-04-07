@@ -152,5 +152,4 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 	)
 }
 
-
 export default InfoCreateEvent
