@@ -20,7 +20,8 @@ jobs:
           cache: npm
       - name: Build
         env:
-          NEXT_PUBLIC_URL_BACKEND: ${{ secrets.BACK_URL }}
+          NEXT_PUBLIC_TG_TOKEN: ${{ secrets.NEXT_PUBLIC_TG_CHAT_ID }}
+          NEXT_PUBLIC_TG_CHAT_ID: ${{ secrets.NEXT_PUBLIC_TG_TOKEN }}
         run: |
           npm i
           npm run build
