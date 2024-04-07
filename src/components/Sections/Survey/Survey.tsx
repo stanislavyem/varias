@@ -7,7 +7,7 @@ import { json } from "../../../assets/data/survey";
 import { themeJson } from "./theme";
 import './survey.scss'
 
-export default function App() {
+const SurveySection = () => {
   const survey = new Model(json);
 
   const surveyComplete = useCallback((sender: any) => {
@@ -31,7 +31,7 @@ export default function App() {
   )
 }
 
-function saveSurveyResults(url: string, json: {}) {
+const saveSurveyResults = (url: string, json: {}) => {
   fetch(url, {
     method: 'POST',
     headers: {
@@ -50,3 +50,5 @@ function saveSurveyResults(url: string, json: {}) {
       // Handle error
     });
 }
+
+export default SurveySection
