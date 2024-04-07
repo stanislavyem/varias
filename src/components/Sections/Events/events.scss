@@ -2,5 +2,5 @@
 @import "../../../assets/css/mixins.scss";
 
 section.section_events {
-		background: linear-gradient(var(--section_3), var(--section_4));
+		background: --primary_bg;
 }

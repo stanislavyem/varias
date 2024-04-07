@@ -98,7 +98,7 @@ const SectionTerms = () => {
 					<p>To the extent that the website and the information and services on the website are provided free of charge, we will not be liable for any loss or damage of any nature.</p>
 
 					<h2>Contact Information</h2>
-					<p>If you have any queries regarding any of our terms, please contact us.</p>
+					<p>If you have any queries regarding any of our terms, please <a href="mailto:datemarksapp@gmail.com">contact us</a> via email.</p>
 				</div>
 			</div>
 		</section>

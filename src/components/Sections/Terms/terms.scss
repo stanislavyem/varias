@@ -2,13 +2,9 @@
 @import "../../../assets/css/mixins.scss" ;
 
 section.section_terms {
-	background: linear-gradient(
-		var(--section_1_start),
-		var(--section_1_end),
-		var(--section_2),
-		var(--section_3),
-		var(--section_4),
-		var(--section_5),
-		var(--section_6),
-	);
+	background: --primary_bg;
+}
+
+a:link {
+	color: blue;
 }

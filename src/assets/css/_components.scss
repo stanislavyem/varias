@@ -250,7 +250,7 @@ section {
 
 	&:nth-of-type(1) {
 		padding-top: 80px;
-		background: linear-gradient(var(--section_1_start), var(--section_1_end));
+		background: --primary_bg;
 
 		.section__content {
 			padding-top: 20px;
