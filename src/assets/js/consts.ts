@@ -60,7 +60,7 @@ export const inputPolicies: Record<string, IInputFilter> = {
 
 export const requests = {
 	sendEmail: {
-		url: `${process.env.NEXT_PUBLIC_URL_BACKEND}/api/email`,
+		url: `example/api/email`,
 		method: 'POST'
 	}
 }
