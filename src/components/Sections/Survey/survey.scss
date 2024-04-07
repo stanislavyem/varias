@@ -24,4 +24,7 @@ section.section_markets{
 			display: none;
 		}
 	}
+	.sd-btn--action:hover {
+		--sjs-primary-backcolor-dark: #0f7a46;
+	}
 }

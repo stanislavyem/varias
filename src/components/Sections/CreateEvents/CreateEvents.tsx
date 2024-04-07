@@ -8,7 +8,7 @@ const SectionCreateEvents = () => {
 	return (
 		<section className='section_create-events section_text'>
 			<div className="section__content">
-				<h2 className='section_create-events__header'>Become a beta tester and get paid to give feedback</h2>
+				<h2 className='section_create-events__header'>Test and get paid for your feedback</h2>
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
