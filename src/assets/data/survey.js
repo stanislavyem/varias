@@ -14,12 +14,6 @@ export const json = {
         type: "text"
       },
       {
-        type: "dropdown",
-        name: "status",
-        title: "Relationship status",
-        choices: ["Single", "Taken"],
-      },
-      {
         "type": "matrix",
         "name": "qualities",
         "title": "Please indicate if you agree or disagree with the following statements",
