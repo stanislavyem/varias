@@ -18,6 +18,7 @@ export const linkHome = '/home'
 export const linkPrivacy = '/privacy-policy'
 export const linkTerms = '/terms-conditions'
 export const linkAbout = '/about-us'
+export const linkFeedback = '/feedback'
 interface IInputFilter {
 	length: {
 		min: number,

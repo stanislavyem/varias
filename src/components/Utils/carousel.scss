@@ -1,0 +1,34 @@
+.carousel-container {
+    display: flex; /* Add this */
+    justify-content: center; /* Add this */
+    position: relative;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    width: 20rem;
+    height: 34rem;
+}
+
+.carousel-images-container {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+.carousel-text-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    color: #ffffff;
+}
+
+.carousel-nav-container {
+    justify-content: center;
+    display: flex;
+    margin-top: 0.75rem;
+}

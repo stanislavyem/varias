@@ -10,7 +10,7 @@ const Footer = () => {
 	return (
 		<footer>
 			<div className="container_page container_content">
-				<div className="links">
+				{/* <div className="links">
 					<div className="socials">
 						<a href="https://www.facebook.com" target="_blank" aria-label="Open the link to the Facebook profile in a new window">
 							<div className="img-wrapper">
@@ -50,7 +50,7 @@ const Footer = () => {
 							</div>
 						</a>
 					</div>
-				</div>
+				</div> */}
 				<div className="disclaimer">
 					<p>By accessing this website, you agree to the Datemarks <Link href={linkTerms}>Terms of Service</Link> and <Link href={linkPrivacy}>Privacy Policy</Link>.</p>
 					<div role='navigation'>

@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import logo from "../../../assets/images/ic_app_logo.svg"
+import demo from "../../../assets/images/demo.webp"
 import './_create-events.scss'
 import InfoCreateEvent from '@/components/Blocks/InfoCreateEvent/InfoCreateEvent'
 
@@ -8,11 +8,11 @@ const SectionCreateEvents = () => {
 	return (
 		<section className='section_create-events section_text'>
 			<div className="section__content">
-				<h2 className='section_create-events__header'>Create events in minutes</h2>
+				<h2 className='section_create-events__header'>Test and get paid for your feedback</h2>
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: logo, 
+							src: demo as unknown as string, 
 							alt: '!!!',
 							pos: 'rt'
 						}}

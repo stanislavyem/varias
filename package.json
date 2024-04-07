@@ -16,7 +16,9 @@
     "react": "^18",
     "react-dom": "^18",
     "replace-in-file": "^7.1.0",
-    "sass": "^1.69.7"
+    "sass": "^1.69.7",
+    "survey-core": "^1.9.136",
+    "survey-react-ui": "^1.9.136"
   },
   "devDependencies": {
     "@types/node": "^20",

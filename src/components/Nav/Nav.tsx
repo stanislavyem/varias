@@ -2,7 +2,7 @@ import './nav.scss'
 import { INavItem } from '@/interfaces';
 import NavItem from './NavItem/NavItem';
 import NavLogin from './NavLogin/NavLogin';
-import { linkAbout, linkHome, linkPrivacy, linkTerms } from '@/assets/js/consts';
+import { linkAbout, linkHome, linkPrivacy, linkTerms, linkFeedback } from '@/assets/js/consts';
 
 
 export const navItems: INavItem[] = [
@@ -34,6 +34,13 @@ export const navItems: INavItem[] = [
 			fr: 'FR About Us',
 		},
 		link: linkAbout
+	},
+	{
+		title: {
+			en: 'Feedback',
+			fr: 'FR Feedback',
+		},
+		link: linkFeedback
 	},
 	// {
 	// 	title: {

@@ -135,7 +135,7 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 
 	return (
 		<div className='block_info-create-events'>
-			<h2>Create events in minutes</h2>
+			<h2>Test and get paid for your feedback</h2>
 			<form onSubmit={onEmailSubmit}>
 				<Input 
 					ref={_email}
@@ -151,6 +151,5 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		</div>
 	)
 }
-
 
 export default InfoCreateEvent
