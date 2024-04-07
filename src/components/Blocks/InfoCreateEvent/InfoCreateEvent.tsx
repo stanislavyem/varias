@@ -54,7 +54,7 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		const email = _email.current?.getValue()
 		setSending(true)
 		
-				//mockup for sending to TG
+				// mockup for sending to TG
 				// const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
 				// try { //send text to TG
 				// 	const response = await fetch(urlMessage, {
@@ -71,17 +71,23 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 				// 	console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
 				// }
 
+				// const response: Response = await fetch(requests.sendEmail.url, {
+				//     //signal: controller.signal,
+				//     method: requests.sendEmail.method,
+				//     headers: {
+				//         "Content-Type": 'application/json',
+				//     },
+				// 	body: JSON.stringify({ email })
+				// })
 
 		//send data
 		try {
-			const response: Response = await fetch(requests.sendEmail.url, {
-                //signal: controller.signal,
-                method: requests.sendEmail.method,
-                headers: {
-                    "Content-Type": 'application/json',
-                },
-				body: JSON.stringify({ email })
-            })
+			const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
+			const response = await fetch(urlMessage, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
+			})
 			
 			if (!response.ok) {
 				const result: {message: string} = await response.json()

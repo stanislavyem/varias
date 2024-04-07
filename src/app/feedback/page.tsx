@@ -9,9 +9,7 @@ export const metadata: Metadata = {
 
 const Feeback = () => {
 	return (
-		<>
-			<SurveySection />
-		</>
+		<SurveySection />
 	)
 }
 
