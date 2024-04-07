@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "replaceFilePaths": "node replacer.js",
     "dev": "set NEXT_PUBLIC_APP_ENV=development && next dev -p 3200",
-    "build": "set NEXT_PUBLIC_APP_ENV=production && next build",
+    "build": "set NEXT_PUBLIC_APP_ENV=production && next build && npm run replaceFilePaths",
     "start": "set NEXT_PUBLIC_APP_ENV=production && npx serve@latest out",
-    "lint": "next lint",
-    "export": "next export"
+    "lint": "next lint"
   },
   "dependencies": {
     "dotenv": "^16.4.1",
@@ -15,6 +15,7 @@
     "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
+    "replace-in-file": "^7.1.0",
     "sass": "^1.69.7",
     "survey-core": "^1.9.136",
     "survey-react-ui": "^1.9.136"
