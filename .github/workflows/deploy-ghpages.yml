@@ -33,8 +33,8 @@ jobs:
       - name: Create env file
         run: |
           touch .env
-          echo NEXT_PUBLIC_TG_TOKEN=${NEXT_PUBLIC_TG_TOKEN} >> .env
-          echo NEXT_PUBLIC_TG_CHAT_ID=${NEXT_PUBLIC_TG_CHAT_ID} >> .env
+          echo NEXT_PUBLIC_TG_TOKEN=${NEXT_PUBLIC_TG_TOKEN} > .env
+          echo NEXT_PUBLIC_TG_CHAT_ID=${NEXT_PUBLIC_TG_CHAT_ID} > .env
           cat .env
         env: 
           NEXT_PUBLIC_TG_TOKEN: ${{ secrets.TG_TOKEN }}
