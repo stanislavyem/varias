@@ -10,7 +10,7 @@ import Preloader from '@/components/Preloader/Preloader'
 
 
 
-const InfoCreateEvent: React.FC = ():JSX.Element => {
+const InfoCreateEvent: React.FC = (): JSX.Element => {
 	const { modal } = useAppContext()
 	const _email = useRef<IInputFunctions>(null)
 	const [sending, setSending] = useState<boolean>(false)
@@ -38,63 +38,63 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		if (errors.length > 0) {
 			///modal with errors
 			modal?.current?.openModal({
-                name: 'error',
-                onClose: (() => modal.current?.closeCurrent()),
-				children: <ModalMessage 
+				name: 'error',
+				onClose: (() => modal.current?.closeCurrent()),
+				children: <ModalMessage
 					texts={errors}
 					button='OK'
 					header='Errors found:'
 					status='error'
 					onClick={() => modal.current?.closeCurrent()}
 				/>
-            })
+			})
 			return
 		}
 
 		const email = _email.current?.getValue()
 		setSending(true)
-		
-				// mockup for sending to TG
-				// const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
-				// try { //send text to TG
-				// 	const response = await fetch(urlMessage, {
-				// 		method: 'POST',
-				// 		headers: { 'Content-Type': 'application/json' },
-				// 		body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
-				// 	})
-				// 	if (!response.ok) {
-				// 		console.log('Error while sending message using TG.', response);
-				// 		return
-				// 	}
-				// 	console.log('Sent!');
-				// } catch (e) {
-				// 	console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
-				// }
 
-				// const response: Response = await fetch(requests.sendEmail.url, {
-				//     //signal: controller.signal,
-				//     method: requests.sendEmail.method,
-				//     headers: {
-				//         "Content-Type": 'application/json',
-				//     },
-				// 	body: JSON.stringify({ email })
-				// })
+		// mockup for sending to TG
+		// const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
+		// try { //send text to TG
+		// 	const response = await fetch(urlMessage, {
+		// 		method: 'POST',
+		// 		headers: { 'Content-Type': 'application/json' },
+		// 		body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
+		// 	})
+		// 	if (!response.ok) {
+		// 		console.log('Error while sending message using TG.', response);
+		// 		return
+		// 	}
+		// 	console.log('Sent!');
+		// } catch (e) {
+		// 	console.log(`Something wrong while sending message to TG, try again later. Error: ${e}`)
+		// }
+
+		// const response: Response = await fetch(requests.sendEmail.url, {
+		//     //signal: controller.signal,
+		//     method: requests.sendEmail.method,
+		//     headers: {
+		//         "Content-Type": 'application/json',
+		//     },
+		// 	body: JSON.stringify({ email })
+		// })
 
 		//send data
 		try {
-			const urlMessage= `https://api.telegram.org/bot6373603798:AAHnYBfoQOm5usYSQpBz-vpDldVUL9St-Ao/sendMessage`;
+			const urlMessage = `https://api.telegram.org/bot6373603798:AAHnYBfoQOm5usYSQpBz-vpDldVUL9St-Ao/sendMessage`;
 			const response = await fetch(urlMessage, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ chat_id: -1002044689076, text: `New email: ${email}` })
 			})
-			
+
 			if (!response.ok) {
-				const result: {message: string} = await response.json()
+				const result: { message: string } = await response.json()
 				modal?.current?.openModal({
 					name: 'error',
 					onClose: (() => modal.current?.closeCurrent()),
-					children: <ModalMessage 
+					children: <ModalMessage
 						texts={[result.message]}
 						button='OK'
 						header='Errors occured:'
@@ -105,14 +105,14 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 				setSending(false)
 				return
 			}
-			
+
 			modal?.current?.openModal({
 				name: 'success',
 				onClose: (() => {
 					modal.current?.closeCurrent()
 					_email.current?.setValue('')
 				}),
-				children: <ModalMessage 
+				children: <ModalMessage
 					texts={['Your email has been sent']}
 					button='Close'
 					header='Success'
@@ -121,18 +121,18 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 				/>
 			})
 		} catch (error) {
-			const message = error instanceof Error ?  error.message : String(error)
+			const message = error instanceof Error ? error.message : String(error)
 			modal?.current?.openModal({
-                name: 'error',
-                onClose: (() => modal.current?.closeCurrent()),
-				children: <ModalMessage 
+				name: 'error',
+				onClose: (() => modal.current?.closeCurrent()),
+				children: <ModalMessage
 					texts={[message]}
 					button='OK'
 					header='Errors occured:'
 					status='error'
 					onClick={() => modal.current?.closeCurrent()}
 				/>
-            })
+			})
 		}
 		setSending(false)
 	}
@@ -143,7 +143,7 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 		<div className='block_info-create-events'>
 			<h2>Test and get paid for your feedback</h2>
 			<form onSubmit={onEmailSubmit}>
-				<Input 
+				<Input
 					ref={_email}
 					name='email'
 					valueType='email'
