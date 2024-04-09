@@ -82,11 +82,11 @@ const InfoCreateEvent: React.FC = ():JSX.Element => {
 
 		//send data
 		try {
-			const urlMessage= `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TG_TOKEN}/sendMessage`;
+			const urlMessage= `https://api.telegram.org/bot6373603798:AAHnYBfoQOm5usYSQpBz-vpDldVUL9St-Ao/sendMessage`;
 			const response = await fetch(urlMessage, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ chat_id: process.env.NEXT_PUBLIC_TG_CHAT_ID, text: `New email: ${email}` })
+				body: JSON.stringify({ chat_id: -1002044689076, text: `New email: ${email}` })
 			})
 			
 			if (!response.ok) {
