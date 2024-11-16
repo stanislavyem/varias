@@ -10,8 +10,8 @@ import Homer from "@/components/Homer/Homer";
 
 export const metadata: Metadata = {
 	title: {
-		default: 'DateMarks',
-		template: '%s | DateMarks'
+		default: 'Datemarks',
+		template: '%s | Datemarks'
 	},
 	
 	description: "Datemarks - Invite The Experience",
