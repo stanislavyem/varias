@@ -82,7 +82,7 @@ const InfoCreateEvent: React.FC = (): JSX.Element => {
 
 		//send data
 		try {
-			const urlMessage = `https://api.telegram.org/bot6373603798:AAHnYBfoQOm5usYSQpBz-vpDldVUL9St-Ao/sendMessage`;
+			const urlMessage = `https://api.telegram.org/bot6373603798:AAG-9NK-LpX6D3wZOTIpsOTie3n0jB23Q_c/sendMessage`;
 			const response = await fetch(urlMessage, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
