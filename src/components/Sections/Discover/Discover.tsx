@@ -20,7 +20,7 @@ const SectionDiscover = () => {
 						<InfoText 
 							header="Discover Events"
 							text={[
-								"Discover exiting events by swiping right to express interest or left to explore more options.", 
+								"Discover exciting events by swiping right to express interest or left to explore more options.", 
 							]}
 						/>
 					</BlockInfo>

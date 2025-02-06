@@ -11,11 +11,11 @@ const Home = () => {
 		<>
 			<h1 className='sr-only'>Datemark app</h1>
 			<SectionCreateEvents />	
-			{/* <OnBoarding /> */}
+			<OnBoarding />
 			{/* <SectionMarkets /> */}
-			<SectionDiscover />
+			{/* <SectionDiscover />
 			<SectionEvents />
-			<SectionConnected />
+			<SectionConnected /> */}
 		</>
 	)
 }
