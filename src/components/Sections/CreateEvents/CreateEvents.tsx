@@ -41,7 +41,7 @@ const DownloadButtons = () => {
 						/>
 					</div>
 				</a>
-				<a href="https://www.google.com" target="_blank" aria-label='Open the link in a new window'>
+				<a href="https://play.google.com/store/apps/details?id=com.datemarks.android" target="_blank" aria-label='Open the link in a new window'>
 					<div className="img-wrapper">
 						<Image
 							src={playMarket.src}
