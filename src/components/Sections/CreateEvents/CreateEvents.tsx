@@ -31,7 +31,7 @@ const DownloadButtons = () => {
 		<div className="text-center space-y-20">
 			<h3 className="text-3xl font-semibold">Invite The Experience - because amazing moments can't always be planned.</h3>
 			<div className="flex justify-center gap-4">
-				<a href="https://www.apple.com" target="_blank" aria-label='Open the link in a new window'>
+				<a href="https://apps.apple.com/ca/app/datemarks/id6496861002" target="_blank" aria-label='Open the link in a new window'>
 					<div className="img-wrapper">
 						<Image
 							src={appStore.src}
