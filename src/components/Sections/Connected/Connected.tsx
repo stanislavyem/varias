@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import onboarding2 from "../../../assets/images/on_boarding_4.svg"
+import onboarding2 from "../../../assets/images/on_boarding_4.png"
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
 

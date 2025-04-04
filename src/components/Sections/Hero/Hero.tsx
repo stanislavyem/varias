@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import demo from "../../../assets/images/demo.svg"
+import demo from "../../../assets/images/demo.png"
 import Image from 'next/image'
 import appStore from '../../../assets/images/app_store.svg'
 import playMarket from '../../../assets/images/play_market.svg'
