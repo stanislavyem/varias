@@ -3,20 +3,38 @@
 
 .block_info-text {
 
+	display: flex;
+	flex-direction: column;
+
 	h2 {
 		margin-top: 0;
-		margin-bottom: 10px;
+		margin-bottom: 35px;
+		order: -1;
+		display: none;
+		text-align: left;
+		
+		@include respond-to(md) {
+			display: initial;
+		}
 	}
 	
 	p {
+		text-align: center;
+		font-size: 1.1rem;
 		margin-top: 15px;
+		color: #727372;
+
 		@include respond-to(xs) {
+			font-size: 1.2rem;
 			margin-top: 20px;
 		}
 		@include respond-to(md) {
+			font-size: 1.3rem;
 			margin-top: 25px;
+			text-align: left;
 		}
 		@include respond-to(lg) {
+			// font-size: 1.3rem;
 			margin-top: 30px;
 		}
 	
