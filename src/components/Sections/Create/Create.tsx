@@ -1,25 +1,25 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import onboarding2 from "../../../assets/images/on_boarding_4.svg"
+import onboarding2 from "../../../assets/images/on_boarding_1.svg"
 import InfoText from '@/components/Blocks/InfoText/InfoText'
+import './create.scss'
 
-
-const SectionConnected = () => {
+const SectionEvents = () => {
 	return (
 		<section className='section_create section_text'>
 			<div className="section__content">
-			<h2 className='section_create__header'>Meet People</h2>
+			<h2 className='section_create__header'>Create Activities</h2>
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
 							src: onboarding2, 
-							alt: 'Datemarks is for meeting people in real life',
-							pos: 'rt'
+							alt: 'Create activities',
+							pos: 'lt'
 						}}
 					>
-						<InfoText
-							header="Meet People"
+						<InfoText 
+							header="Create Activities"
 							text={[
-								"Invite the experience and meet new people in real life", 
+								"Make the most of your time by creating last-minute plans and inviting others to join", 
 							]}
 						/>
 					</BlockInfo>
@@ -29,4 +29,4 @@ const SectionConnected = () => {
 	)
 }
 
-export default SectionConnected
+export default SectionEvents

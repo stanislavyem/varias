@@ -1,9 +1,9 @@
 @import "../../../assets/css/variables.scss" ;
 
-section.section_markets{
+section.section_create {
 	background: --primary_bg;
 
-	.section_markets__header.section_markets__header {
+	.section_create__header.section_create__header {
 		text-align: center;
 		align-self: center;	
 		// font-size: 2rem;
@@ -24,7 +24,9 @@ section.section_markets{
 			display: none;
 		}
 	}
-	.sd-btn--action:hover {
+
+    // For Survey.tsx
+    .sd-btn--action:hover {
 		--sjs-primary-backcolor-dark: #0f7a46;
 	}
 }

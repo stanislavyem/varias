@@ -1,4 +1,3 @@
-import './onboarding.scss'
 
 const DATA = [{ title: "Discover activities", info: "Find and join exciting activities happening around you in real time.", image: "https://ik.imagekit.io/datemarks/on_boarding_1.svg?updatedAt=1712044694903" },
  { title: "Chat Now", info: "Connect instantly with other who share your interests.", image: "https://ik.imagekit.io/datemarks/on_boarding_2.svg?updatedAt=1711923185816" }, 
