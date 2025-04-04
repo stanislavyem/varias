@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import onboarding2 from "../../../assets/images/on_boarding_4.svg"
+import onboarding2 from "../../../assets/images/on_boarding_4.png"
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
 
@@ -11,7 +11,7 @@ const SectionConnected = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: onboarding2, 
+							src: onboarding2.src, 
 							alt: 'Datemarks is for meeting people in real life',
 							pos: 'rt'
 						}}

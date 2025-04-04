@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import onboarding1 from "../../../assets/images/on_boarding_2.svg"
+import onboarding1 from "../../../assets/images/on_boarding_2.png"
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
 
@@ -12,7 +12,7 @@ const SectionDiscover = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: onboarding1, 
+							src: onboarding1.src, 
 							alt: 'Explore activities',
 							pos: 'rt'
 						}}
