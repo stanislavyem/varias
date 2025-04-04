@@ -11,7 +11,7 @@ const SectionConnected = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: onboarding2, 
+							src: onboarding2.src, 
 							alt: 'Datemarks is for meeting people in real life',
 							pos: 'rt'
 						}}

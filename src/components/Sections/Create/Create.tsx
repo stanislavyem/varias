@@ -11,7 +11,7 @@ const SectionEvents = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: onboarding2, 
+							src: onboarding2.src, 
 							alt: 'Create activities',
 							pos: 'lt'
 						}}

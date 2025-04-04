@@ -12,7 +12,7 @@ const SectionDiscover = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: onboarding1, 
+							src: onboarding1.src, 
 							alt: 'Explore activities',
 							pos: 'rt'
 						}}

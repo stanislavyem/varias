@@ -11,7 +11,7 @@ const SectionChat = () => {
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
-							src: onboarding2, 
+							src: onboarding2.src, 
 							alt: 'Chat to talk to event participants',
 							pos: 'lt'
 						}}
