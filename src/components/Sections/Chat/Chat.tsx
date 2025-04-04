@@ -1,13 +1,13 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import onboarding2 from "../../../assets/images/on_boarding_2.svg"
-import './events.scss'
+import onboarding2 from "../../../assets/images/on_boarding_3.svg"
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
 
-const SectionEvents = () => {
+const SectionChat = () => {
 	return (
-		<section className='section_events section_text'>
+		<section className='section_create section_text'>
 			<div className="section__content">
+			<h2 className='section_create__header'>Chat Now</h2>
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
@@ -19,7 +19,7 @@ const SectionEvents = () => {
 						<InfoText 
 							header="Chat Now"
 							text={[
-								"Connect instantly with other who share your interests.", 
+								"Engage in conversation to bring your plans to life", 
 							]}
 						/>
 					</BlockInfo>
@@ -29,4 +29,4 @@ const SectionEvents = () => {
 	)
 }
 
-export default SectionEvents
+export default SectionChat
