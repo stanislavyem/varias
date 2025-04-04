@@ -1,28 +1,27 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/market.svg" 
-import './markets.scss'
+import demo from "../../../assets/images/demo.svg"
+import Image from 'next/image'
+import appStore from '../../../assets/images/app_store.svg'
+import playMarket from '../../../assets/images/play_market.svg'
 import InfoMarkets from '@/components/Blocks/InfoMarkets/InfoMarkets'
-import appStore from '../../../assets/images/app_store_white.svg'
-import playMarket from '../../../assets/images/play_market_white.svg'
 
-
-const SectionMarkets = () => {
+const SectionHero = () => {
 	return (
-		<section className='section_markets section_text'>
+		<section className='section_create section_text'>
 			<div className="section__content">
-				<h2 className='section_markets__header'>Let the unexpected unfold</h2>
+				<h2 className='section_create__header'>Invite The Experience</h2>
 				<div className="container_page container_content">
-					<BlockInfo 
+					<BlockInfo
 						img={{
-							src: image1 as unknown as string, 
+							src: demo as unknown as string,
 							alt: '!!!',
 							pos: 'rt'
 						}}
 					>
 						<InfoMarkets
-							header="Let the unexpected unfold"
+							header="Invite The Experience"
 							text={[
-								"The best moments are often unplanned", 
+								"Amazing moments can't always be planned", 
 							]}
 							links={[
 								{src: appStore as unknown as string, alt: 'Apple Store', href: 'https://apps.apple.com/ca/app/datemarks/id6496861002'}, 
@@ -36,4 +35,4 @@ const SectionMarkets = () => {
 	)
 }
 
-export default SectionMarkets
+export default SectionHero

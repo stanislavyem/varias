@@ -1,26 +1,26 @@
-import './discover.scss'
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import onboarding1 from "../../../assets/images/on_boarding_1.svg"
+import onboarding1 from "../../../assets/images/on_boarding_2.svg"
 import InfoText from '@/components/Blocks/InfoText/InfoText'
 
 
 
 const SectionDiscover = () => {
 	return (
-		<section className='section_discover section_text'>
+		<section className='section_create section_text'>
+			<h2 className='section_create__header'>Explore activities</h2>
 			<div className="section__content">
 				<div className="container_page container_content">
 					<BlockInfo 
 						img={{
 							src: onboarding1, 
-							alt: 'Screen to swipe on events',
+							alt: 'Explore activities',
 							pos: 'rt'
 						}}
 					>
 						<InfoText 
-							header="Discover Events"
+							header="Explore Nearby"
 							text={[
-								"Discover exciting events by swiping right to express interest or left to explore more options.", 
+								"Discover last-minute plans nearby, find something that sparks your interest", 
 							]}
 						/>
 					</BlockInfo>

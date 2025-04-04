@@ -1,6 +1,5 @@
 "use client"
 import 'survey-core/defaultV2.min.css';
-import './survey.scss'
 import { useCallback } from 'react';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
@@ -24,7 +23,7 @@ const SurveySection = () => {
   survey.applyTheme(themeJson as any);
 
   return (
-    <section className='section_markets section_text'>
+    <section className='section_create section_text'>
       <div className="section__content">
         <div className="container_page container_content">
           <Survey model={survey} />

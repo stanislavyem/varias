@@ -1,6 +1,6 @@
 @import "../../../assets/css/variables.scss" ;
 
-section.section_markets{
+section.section_markets {
 	background: --primary_bg;
 
 	.section_markets__header.section_markets__header {
@@ -25,3 +25,20 @@ section.section_markets{
 		}
 	}
 }
+
+.section_markets .container_page.container_content {
+	background-color: #00FFA1 !important;
+	border-radius: 12px;
+	padding-right: 0 !important;
+	
+	@media (max-width: $md) { 
+		padding-left: 0 !important;
+	}
+}
+
+.section_markets .container_page .img-wrapper {
+	border-radius: 12px;
+	overflow: hidden; /* Ensures the border-radius applies properly to images */
+}
+
+  
