@@ -1,5 +1,5 @@
 import BlockInfo from '@/components/Blocks/Info/BlockInfo'
-import image1 from "../../../assets/images/market.svg" 
+import image1 from "../../../assets/images/market.png" 
 import './markets.scss'
 import InfoMarkets from '@/components/Blocks/InfoMarkets/InfoMarkets'
 import appStore from '../../../assets/images/app_store_white.svg'
