@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, inArray } from "drizzle-orm";
 import {
   organizations,
   memberships,
@@ -123,7 +123,7 @@ export class DatabaseStorage implements IStorage {
     
     const orgIds = memberOrgs.map(m => m.organizationId);
     return db.select().from(organizations)
-      .where(sql`${organizations.id} = ANY(${orgIds})`)
+      .where(inArray(organizations.id, orgIds))
       .orderBy(desc(organizations.createdAt));
   }
 
