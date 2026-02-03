@@ -39,7 +39,7 @@ const createActionSchema = z.object({
   organizationId: z.string().min(1, "Organization ID is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  dueDate: z.string().nullable().optional(),
+  dueDate: z.string().nullable().optional().transform(val => val ? new Date(val) : null),
   priorityRank: z.number().int().min(0).max(100).default(50),
   assessmentId: z.string().nullable().optional(),
 });
@@ -98,6 +98,7 @@ export async function registerRoutes(
         .select({
           id: scoreSnapshots.id,
           assessmentId: scoreSnapshots.assessmentId,
+          organizationId: assessments.organizationId,
           completionPct: scoreSnapshots.completionPct,
           overallScore: scoreSnapshots.overallScore,
           overallRating: scoreSnapshots.overallRating,
@@ -114,6 +115,24 @@ export async function registerRoutes(
         .innerJoin(organizations, eq(assessments.organizationId, organizations.id))
         .orderBy(desc(scoreSnapshots.createdAt))
         .limit(10);
+
+      // Build a map of org ID to latest score
+      const orgScoreMap = new Map<string, { overallScore: string | null; overallRating: string | null }>();
+      latestScores.forEach(score => {
+        if (!orgScoreMap.has(score.organizationId)) {
+          orgScoreMap.set(score.organizationId, {
+            overallScore: score.overallScore,
+            overallRating: score.overallRating,
+          });
+        }
+      });
+
+      // Add scores to organizations
+      const orgsWithScores = orgs.map(org => ({
+        ...org,
+        latestScore: orgScoreMap.get(org.id)?.overallScore || null,
+        latestRating: orgScoreMap.get(org.id)?.overallRating || null,
+      }));
 
       // Add org names to actions
       const orgMap = new Map(orgs.map(o => [o.id, o.name]));
@@ -137,7 +156,7 @@ export async function registerRoutes(
       const avgScore = avgScoreResult[0]?.avg ? Number(avgScoreResult[0].avg) : null;
 
       res.json({
-        organizations: orgs,
+        organizations: orgsWithScores,
         recentActions,
         latestScores,
         stats: {
@@ -542,7 +561,7 @@ export async function registerRoutes(
 
       const documentSchema = z.object({
         organizationId: z.string().min(1, "Organization ID is required"),
-        category: z.enum(["POLICY", "CERTIFICATE", "TRAINING", "INSPECTION", "CLAIMS", "OTHER"]).optional().default("OTHER"),
+        category: z.enum(["SAFETY_PROGRAM", "TRAINING", "COI", "OSHA_LOG", "INCIDENT_REPORT", "OTHER"]).optional().default("OTHER"),
       });
 
       const validationResult = documentSchema.safeParse(req.body);

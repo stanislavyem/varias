@@ -20,8 +20,13 @@ import {
 import { Link } from "wouter";
 import type { Organization, ActionItem, ScoreSnapshot } from "@shared/schema";
 
+interface OrganizationWithScore extends Organization {
+  latestScore: string | null;
+  latestRating: string | null;
+}
+
 interface DashboardData {
-  organizations: Organization[];
+  organizations: OrganizationWithScore[];
   recentActions: (ActionItem & { organizationName: string })[];
   latestScores: (ScoreSnapshot & { organizationName: string })[];
   stats: {
@@ -138,7 +143,22 @@ export default function DashboardPage() {
                           </p>
                         </div>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex items-center gap-3">
+                        {org.latestScore !== null ? (
+                          <div className="flex items-center gap-2">
+                            <div className="text-right">
+                              <p className="text-lg font-bold">{Number(org.latestScore).toFixed(1)}</p>
+                              <p className="text-xs text-muted-foreground">Score</p>
+                            </div>
+                            {org.latestRating && (
+                              <RatingBadge rating={org.latestRating} />
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">No assessment</span>
+                        )}
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
                     </div>
                   </Link>
                 ))}
