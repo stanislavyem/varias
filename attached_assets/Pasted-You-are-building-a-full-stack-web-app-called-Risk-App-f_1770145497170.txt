@@ -1,0 +1,86 @@
+You are building a full-stack web app called “Risk App” for insurance risk assessment and action management. Use Next.js (TypeScript) + Tailwind for UI, Prisma ORM, and PostgreSQL for the database. Implement role-based access control with 3 roles: CARRIER, AGENT, INSURED. Authentication can be email/password (simple) and roles stored on the user record.
+
+IMPORTANT: Do NOT change any scoring metrics, rating bands, weights, or scoring math. Scoring must match the Excel workbook “Risk_App_Scoring_Engine_Clean_NoLinkedSources.xlsx” exactly:
+- Questions table comes from sheet “Questions” with columns: QuestionID, Pillar, Topic, Question Text, RespType, Weight, ScaleNotes, Constraints.
+- Users answer on a 1–5 scale (integer).
+- NormScore = (response - 1) / 4 mapping 1..5 to 0..1.
+- WeightedPts = NormScore * Weight.
+- OverallScore = 100 * SUM(WeightedPts) across all 20 questions.
+- OverallScore must be blank/undefined until ALL required questions have answers.
+- OverallRating bands come from sheet “Config”:
+  0–54.999 = High Risk
+  55–69.999 = Elevated Risk
+  70–84.999 = Moderate Risk
+  85–100 = Strong / Low Risk
+- Pillar scores:
+  Safety is sum of WeightedPts where Pillar=Safety divided by pillar weight share (0.4), multiplied by 100.
+  WorkersComp similarly using weight share (0.2), multiplied by 100.
+  Fleet similarly using weight share (0.4), multiplied by 100.
+
+SUBCONTRACTOR SUB-SCORE: Create a separate mini-form based on sheet “Subcontractor_SubScore” with 3 controls:
+1) Safety Training & Oversight (weight 0.3, score 1–5)
+2) Ongoing Insurance Verification (weight 0.4, score 1–5)
+3) Coverage & Contract Integrity (weight 0.3, score 1–5)
+Compute SubcontractorWeightedAvg = SUM(score*weight) (range 1–5).
+Also capture a boolean “GuardrailTriggered” based on the workbook trigger: if control #2 score <= 2 then GuardrailTriggered = true else false.
+NOTE: The Excel workbook has a broken “Safety Pillar Score (Adjusted)” formula; implement the base pillar scores exactly as described above, and implement GuardrailTriggered as a displayed flag only (no capping) for MVP. Put the future capping logic behind a feature flag called ENABLE_GUARDRAIL_CAPPING default false, and document in code where capping would occur once the business rule is finalized.
+
+DATA MODEL (Prisma):
+- User: id, email, passwordHash, role (CARRIER|AGENT|INSURED), name, createdAt
+- Organization (Insured Account): id, name, industry, naicsCode (optional), createdAt
+- Membership: id, userId, organizationId, roleOverride (optional) for multi-tenant access
+- Assessment: id, organizationId, createdByUserId, status (DRAFT|SUBMITTED|CLOSED), createdAt, submittedAt
+- Question: id (QuestionID string like SAF-01), pillar, topic, text, weight (decimal), scaleNotes (text), constraints (text)
+- Response: id, assessmentId, questionId, responseValue (int 1–5), normScore (decimal), weightedPts (decimal)
+- ScoreSnapshot: id, assessmentId, completionPct, overallScore, overallRating, safetyScore, workersCompScore, fleetScore, guardrailTriggered, subcontractorWeightedAvg
+- ActionItem: id, organizationId, assessmentId (nullable), assignedToUserId (nullable), createdByUserId, priorityRank (int), title, description, status (OPEN|IN_PROGRESS|DONE), dueDate (nullable), createdAt, closedAt
+- Comment: id, organizationId, assessmentId (nullable), actionItemId (nullable), authorUserId, body, createdAt
+- Document: id, organizationId, assessmentId (nullable), uploadedByUserId, filename, mimeType, storagePath/url, category (SAFETY_PROGRAM|TRAINING|COI|OSHA_LOG|INCIDENT_REPORT|OTHER), createdAt
+
+IMPORT QUESTIONS:
+On first run, seed the Question table by reading the included Excel file from the repo using an xlsx parser. Store all 20 questions exactly as-is (including ScaleNotes and Constraints text). Also store the rating bands in code constants matching Config. Do not allow editing of weights in the UI.
+
+CORE FLOWS:
+1) Organization dashboard (for a selected insured account):
+   - Header: organization name, industry
+   - Cards: Completion %, Overall Score, Overall Rating, Safety/WorkersComp/Fleet pillar scores
+   - List: Action Items sorted by priority (highest risk first). Priority rule:
+       - If assessment exists, compute each action’s priorityRank based on overallScore severity first (High Risk actions bubble up), then dueDate, then createdAt.
+       - Show filters: status, assignedTo, due in next 30 days.
+2) Company Profile page:
+   - Capture and display org attributes (name, industry, NAICS optional, locations optional).
+3) Assessment (Questionnaire) page:
+   - Render 20 questions grouped by Pillar and Topic.
+   - Each question uses a 1–5 selector with ScaleNotes tooltip and Constraints displayed under a “Guidance” accordion.
+   - Auto-save responses.
+   - Show progress bar.
+   - Compute score snapshot live, but only display final overall score/rating when all 20 answered; until then show “Incomplete”.
+4) Subcontractor Sub-Score page:
+   - Capture the 3 control scores (1–5).
+   - Compute SubcontractorWeightedAvg and GuardrailTriggered; show GuardrailTriggered prominently.
+5) Action Management:
+   - Carrier/Agent can create action items for an organization and optionally tie them to an assessment.
+   - Insured can update status and close actions (DONE) with closing notes (store as a comment).
+6) Comments:
+   - Threaded comments per Assessment and per Action Item (simple chronological is fine).
+7) Document Uploads:
+   - Upload documents to storage (local filesystem in dev; S3-compatible optional). Save metadata in Document table.
+   - Allow categorization (COI, safety program, training, OSHA logs, incident reports, other).
+   - Show document list per organization with filters by category.
+8) Auditability:
+   - Every assessment has immutable score snapshot after SUBMITTED.
+   - Responses remain stored for traceability.
+
+UI/UX:
+- Clean executive dashboard feel.
+- Use consistent components: cards, tables, badges for ratings.
+- Rating badge colors are optional but keep professional.
+- Include “Export PDF” button placeholder (no need to implement full PDF in MVP; create a route stub).
+- Multi-tenant security: users can only see organizations they are members of.
+
+DELIVERABLES:
+- Working app with migrations, seed scripts, and the Excel import.
+- README with setup steps.
+- Ensure scoring outputs match the Excel formulas exactly for any given set of 1–5 responses.
+
+After implementation, create a small test route /dev/scoring-test that accepts 20 responses and prints overall score, pillar scores, and rating, so we can validate against Excel.
