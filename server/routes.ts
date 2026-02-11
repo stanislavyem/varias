@@ -113,10 +113,10 @@ export async function registerRoutes(
         .from(scoreSnapshots)
         .innerJoin(assessments, eq(scoreSnapshots.assessmentId, assessments.id))
         .innerJoin(organizations, eq(assessments.organizationId, organizations.id))
-        .orderBy(desc(scoreSnapshots.createdAt))
-        .limit(10);
+        .where(sql`${scoreSnapshots.overallScore} IS NOT NULL`)
+        .orderBy(desc(scoreSnapshots.createdAt));
 
-      // Build a map of org ID to latest score
+      // Build a map of org ID to latest non-null score
       const orgScoreMap = new Map<string, { overallScore: string | null; overallRating: string | null }>();
       latestScores.forEach(score => {
         if (!orgScoreMap.has(score.organizationId)) {
