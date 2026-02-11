@@ -5,7 +5,7 @@ import { isAuthenticated } from "./replit_integrations/auth";
 import { QUESTIONS_DATA } from "./questions-data";
 import { db } from "./db";
 import { organizations, users, assessments, scoreSnapshots, actionItems, documents, comments } from "@shared/schema";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and, inArray } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -94,30 +94,63 @@ export async function registerRoutes(
       const userId = req.user?.claims?.sub;
       
       const orgs = await storage.getOrganizations(userId);
+      const orgIds = orgs.map(o => o.id);
       const allActions = await storage.getActionItems(userId);
       
-      // Get latest scores with org names
-      const latestScores = await db
-        .select({
-          id: scoreSnapshots.id,
-          assessmentId: scoreSnapshots.assessmentId,
-          organizationId: assessments.organizationId,
-          completionPct: scoreSnapshots.completionPct,
-          overallScore: scoreSnapshots.overallScore,
-          overallRating: scoreSnapshots.overallRating,
-          safetyScore: scoreSnapshots.safetyScore,
-          workersCompScore: scoreSnapshots.workersCompScore,
-          fleetScore: scoreSnapshots.fleetScore,
-          guardrailTriggered: scoreSnapshots.guardrailTriggered,
-          subcontractorWeightedAvg: scoreSnapshots.subcontractorWeightedAvg,
-          createdAt: scoreSnapshots.createdAt,
-          organizationName: organizations.name,
-        })
-        .from(scoreSnapshots)
-        .innerJoin(assessments, eq(scoreSnapshots.assessmentId, assessments.id))
-        .innerJoin(organizations, eq(assessments.organizationId, organizations.id))
-        .where(sql`${scoreSnapshots.overallScore} IS NOT NULL`)
-        .orderBy(desc(scoreSnapshots.createdAt));
+      // Get all assessments for user's organizations with their latest score
+      const allAssessments = orgIds.length > 0
+        ? await db
+            .select({
+              id: assessments.id,
+              organizationId: assessments.organizationId,
+              status: assessments.status,
+              createdAt: assessments.createdAt,
+              submittedAt: assessments.submittedAt,
+              organizationName: organizations.name,
+            })
+            .from(assessments)
+            .innerJoin(organizations, eq(assessments.organizationId, organizations.id))
+            .where(inArray(assessments.organizationId, orgIds))
+            .orderBy(desc(assessments.createdAt))
+        : [];
+
+      // Get latest scores with org names, filtered to user's orgs
+      const latestScoresRaw = orgIds.length > 0
+        ? await db
+            .select({
+              id: scoreSnapshots.id,
+              assessmentId: scoreSnapshots.assessmentId,
+              organizationId: assessments.organizationId,
+              completionPct: scoreSnapshots.completionPct,
+              overallScore: scoreSnapshots.overallScore,
+              overallRating: scoreSnapshots.overallRating,
+              safetyScore: scoreSnapshots.safetyScore,
+              workersCompScore: scoreSnapshots.workersCompScore,
+              fleetScore: scoreSnapshots.fleetScore,
+              guardrailTriggered: scoreSnapshots.guardrailTriggered,
+              subcontractorWeightedAvg: scoreSnapshots.subcontractorWeightedAvg,
+              createdAt: scoreSnapshots.createdAt,
+              organizationName: organizations.name,
+            })
+            .from(scoreSnapshots)
+            .innerJoin(assessments, eq(scoreSnapshots.assessmentId, assessments.id))
+            .innerJoin(organizations, eq(assessments.organizationId, organizations.id))
+            .where(
+              and(
+                sql`${scoreSnapshots.overallScore} IS NOT NULL`,
+                inArray(assessments.organizationId, orgIds)
+              )
+            )
+            .orderBy(desc(scoreSnapshots.createdAt))
+        : [];
+
+      // Deduplicate: keep only the latest score snapshot per assessment
+      const seenAssessments = new Set<string>();
+      const latestScores = latestScoresRaw.filter(score => {
+        if (seenAssessments.has(score.assessmentId)) return false;
+        seenAssessments.add(score.assessmentId);
+        return true;
+      });
 
       // Build a map of org ID to latest non-null score
       const orgScoreMap = new Map<string, { overallScore: string | null; overallRating: string | null }>();
@@ -137,6 +170,20 @@ export async function registerRoutes(
         latestRating: orgScoreMap.get(org.id)?.overallRating || null,
       }));
 
+      // Enrich assessments with their latest score
+      const assessmentScoreMap = new Map<string, { overallScore: string | null; overallRating: string | null }>();
+      latestScores.forEach(score => {
+        assessmentScoreMap.set(score.assessmentId, {
+          overallScore: score.overallScore,
+          overallRating: score.overallRating,
+        });
+      });
+
+      const recentAssessments = allAssessments.map(a => ({
+        ...a,
+        score: assessmentScoreMap.get(a.id) || null,
+      }));
+
       // Add org names to actions
       const orgMap = new Map(orgs.map(o => [o.id, o.name]));
       const recentActions = allActions.slice(0, 10).map(a => ({
@@ -146,25 +193,32 @@ export async function registerRoutes(
 
       // Calculate stats
       const openActions = allActions.filter(a => a.status !== "DONE").length;
-      const activeAssessments = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(assessments)
-        .where(eq(assessments.status, "DRAFT"))
-        .then(r => Number(r[0]?.count || 0));
+      const draftCount = allAssessments.filter(a => a.status === "DRAFT").length;
+      const completedCount = allAssessments.filter(a => a.status === "SUBMITTED" || a.status === "CLOSED").length;
 
-      const avgScoreResult = await db
-        .select({ avg: sql<number>`avg(${scoreSnapshots.overallScore}::numeric)` })
-        .from(scoreSnapshots)
-        .where(sql`${scoreSnapshots.overallScore} IS NOT NULL`);
+      const avgScoreResult = orgIds.length > 0
+        ? await db
+            .select({ avg: sql<number>`avg(${scoreSnapshots.overallScore}::numeric)` })
+            .from(scoreSnapshots)
+            .innerJoin(assessments, eq(scoreSnapshots.assessmentId, assessments.id))
+            .where(
+              and(
+                sql`${scoreSnapshots.overallScore} IS NOT NULL`,
+                inArray(assessments.organizationId, orgIds)
+              )
+            )
+        : [{ avg: null }];
       const avgScore = avgScoreResult[0]?.avg ? Number(avgScoreResult[0].avg) : null;
 
       res.json({
         organizations: orgsWithScores,
         recentActions,
+        recentAssessments,
         latestScores,
         stats: {
           totalOrganizations: orgs.length,
-          activeAssessments,
+          activeAssessments: draftCount,
+          completedAssessments: completedCount,
           openActions,
           avgScore,
         },

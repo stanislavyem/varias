@@ -15,7 +15,8 @@ import {
   CheckCircle2,
   Clock,
   Plus,
-  ArrowRight
+  ArrowRight,
+  FileCheck
 } from "lucide-react";
 import { Link } from "wouter";
 import type { Organization, ActionItem, ScoreSnapshot } from "@shared/schema";
@@ -25,13 +26,25 @@ interface OrganizationWithScore extends Organization {
   latestRating: string | null;
 }
 
+interface RecentAssessment {
+  id: string;
+  organizationId: string;
+  status: string;
+  createdAt: string;
+  submittedAt: string | null;
+  organizationName: string;
+  score: { overallScore: string | null; overallRating: string | null } | null;
+}
+
 interface DashboardData {
   organizations: OrganizationWithScore[];
   recentActions: (ActionItem & { organizationName: string })[];
+  recentAssessments: RecentAssessment[];
   latestScores: (ScoreSnapshot & { organizationName: string })[];
   stats: {
     totalOrganizations: number;
     activeAssessments: number;
+    completedAssessments: number;
     openActions: number;
     avgScore: number | null;
   };
@@ -64,13 +77,18 @@ export default function DashboardPage() {
   const stats = data?.stats || {
     totalOrganizations: 0,
     activeAssessments: 0,
+    completedAssessments: 0,
     openActions: 0,
     avgScore: null,
   };
 
+  const completedAssessments = data?.recentAssessments?.filter(
+    a => a.status === "SUBMITTED" || a.status === "CLOSED"
+  ) || [];
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
@@ -99,10 +117,10 @@ export default function DashboardPage() {
           subtitle="In progress"
         />
         <ScoreCard
-          title="Open Actions"
-          value={stats.openActions}
-          icon={AlertTriangle}
-          subtitle="Requiring attention"
+          title="Completed"
+          value={stats.completedAssessments}
+          icon={FileCheck}
+          subtitle="Submitted assessments"
         />
         <ScoreCard
           title="Avg. Risk Score"
@@ -111,6 +129,64 @@ export default function DashboardPage() {
           subtitle="0 - 100 scale"
         />
       </div>
+
+      {completedAssessments.length > 0 && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
+            <div>
+              <CardTitle>Completed Assessments</CardTitle>
+              <CardDescription>Submitted and finalized risk assessments</CardDescription>
+            </div>
+            <Link href="/assessments">
+              <Button variant="ghost" size="sm" className="gap-1" data-testid="link-view-all-assessments">
+                View all
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {completedAssessments.slice(0, 6).map((assessment) => (
+                <Link key={assessment.id} href={`/assessments/${assessment.id}`}>
+                  <div className="flex items-center justify-between p-3 rounded-lg hover-elevate cursor-pointer border" data-testid={`card-completed-assessment-${assessment.id}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{assessment.organizationName}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {assessment.submittedAt
+                            ? `Submitted ${new Date(assessment.submittedAt).toLocaleDateString()}`
+                            : `Created ${new Date(assessment.createdAt).toLocaleDateString()}`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {assessment.score?.overallScore ? (
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <p className="text-lg font-bold" data-testid={`text-score-${assessment.id}`}>
+                              {Number(assessment.score.overallScore).toFixed(0)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">/ 100</p>
+                          </div>
+                          {assessment.score.overallRating && (
+                            <RatingBadge rating={assessment.score.overallRating} />
+                          )}
+                        </div>
+                      ) : (
+                        <StatusBadge status={assessment.status as any} />
+                      )}
+                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
