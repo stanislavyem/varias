@@ -229,9 +229,9 @@ export async function registerRoutes(
       if (!org) {
         return res.status(404).json({ message: "Organization not found" });
       }
-      const userMemberships = await storage.getMemberships(userId);
-      const isMember = userMemberships.some(m => m.organizationId === id);
-      if (!isMember) {
+      const userOrgs = await storage.getOrganizations(userId);
+      const canAccess = userOrgs.some(o => o.id === id);
+      if (!canAccess) {
         return res.status(403).json({ message: "You do not have permission to delete this organization" });
       }
       await storage.deleteOrganization(id);
