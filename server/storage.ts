@@ -37,6 +37,7 @@ import {
   calculateQuestionScore,
   applyConstraints,
   getRatingFromScore,
+  rawScoreToDisplay,
   PILLAR_WEIGHTS,
 } from "@shared/schema";
 import { users } from "@shared/models/auth";
@@ -442,12 +443,12 @@ export class DatabaseStorage implements IStorage {
         }
       }
 
-      overallScore = totalScore;
-      overallRating = getRatingFromScore(overallScore);
+      overallScore = rawScoreToDisplay(totalScore);
+      overallRating = getRatingFromScore(totalScore);
 
-      safetyScore = pillarPts.Safety;
-      workersCompScore = pillarPts.WorkersComp;
-      fleetScore = pillarPts.Fleet;
+      safetyScore = rawScoreToDisplay(pillarPts.Safety / PILLAR_WEIGHTS.Safety);
+      workersCompScore = rawScoreToDisplay(pillarPts.WorkersComp / PILLAR_WEIGHTS.WorkersComp);
+      fleetScore = rawScoreToDisplay(pillarPts.Fleet / PILLAR_WEIGHTS.Fleet);
     }
 
     const guardrailTriggered = subResponse?.guardrailTriggered || false;
@@ -455,11 +456,11 @@ export class DatabaseStorage implements IStorage {
     const snapshot: InsertScoreSnapshot = {
       assessmentId,
       completionPct: completionPct.toFixed(2),
-      overallScore: overallScore?.toFixed(3) || null,
+      overallScore: overallScore?.toFixed(1) || null,
       overallRating,
-      safetyScore: safetyScore?.toFixed(3) || null,
-      workersCompScore: workersCompScore?.toFixed(3) || null,
-      fleetScore: fleetScore?.toFixed(3) || null,
+      safetyScore: safetyScore?.toFixed(1) || null,
+      workersCompScore: workersCompScore?.toFixed(1) || null,
+      fleetScore: fleetScore?.toFixed(1) || null,
       guardrailTriggered,
       subcontractorWeightedAvg: subResponse?.weightedAvg || null,
     };

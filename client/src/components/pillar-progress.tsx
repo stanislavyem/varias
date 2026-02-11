@@ -7,14 +7,14 @@ interface PillarProgressProps {
   className?: string;
 }
 
-export function PillarProgress({ label, value, maxValue = 5, className }: PillarProgressProps) {
+export function PillarProgress({ label, value, maxValue = 100, className }: PillarProgressProps) {
   const displayValue = value ?? 0;
   const pct = maxValue > 0 ? (displayValue / maxValue) * 100 : 0;
 
   const getColor = () => {
-    if (pct >= 88) return "bg-green-500";
-    if (pct >= 76) return "bg-amber-500";
-    if (pct >= 64) return "bg-orange-500";
+    if (pct >= 85) return "bg-green-500";
+    if (pct >= 70) return "bg-amber-500";
+    if (pct >= 55) return "bg-orange-500";
     return "bg-red-500";
   };
 
@@ -23,7 +23,7 @@ export function PillarProgress({ label, value, maxValue = 5, className }: Pillar
       <div className="flex justify-between text-sm">
         <span className="font-medium">{label}</span>
         <span className="text-muted-foreground">
-          {value !== null && value !== undefined ? `${value.toFixed(2)}` : "\u2014"}
+          {value !== null && value !== undefined ? `${value.toFixed(0)}` : "\u2014"}
         </span>
       </div>
       <div className="h-2 bg-muted rounded-full overflow-hidden">

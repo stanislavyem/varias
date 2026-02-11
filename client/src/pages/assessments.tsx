@@ -124,7 +124,7 @@ export default function AssessmentsPage() {
                           <div className="flex items-center gap-2">
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                             <span className="text-2xl font-bold">
-                              {Number(assessment.score.overallScore).toFixed(1)}
+                              {Number(assessment.score.overallScore).toFixed(0)}
                             </span>
                           </div>
                           {assessment.score.overallRating && (

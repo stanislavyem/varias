@@ -106,9 +106,9 @@ export default function DashboardPage() {
         />
         <ScoreCard
           title="Avg. Risk Score"
-          value={stats.avgScore !== null ? stats.avgScore.toFixed(2) : null}
+          value={stats.avgScore !== null ? stats.avgScore.toFixed(0) : null}
           icon={TrendingUp}
-          subtitle="1.00 - 5.00 scale"
+          subtitle="0 - 100 scale"
         />
       </div>
 
@@ -147,7 +147,7 @@ export default function DashboardPage() {
                         {org.latestScore !== null ? (
                           <div className="flex items-center gap-2">
                             <div className="text-right">
-                              <p className="text-lg font-bold">{Number(org.latestScore).toFixed(1)}</p>
+                              <p className="text-lg font-bold">{Number(org.latestScore).toFixed(0)}</p>
                               <p className="text-xs text-muted-foreground">Score</p>
                             </div>
                             {org.latestRating && (
@@ -249,25 +249,25 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-3xl font-bold">
-                        {score.overallScore ? Number(score.overallScore).toFixed(2) : "\u2014"}
+                        {score.overallScore ? Number(score.overallScore).toFixed(0) : "\u2014"}
                       </span>
-                      <span className="text-sm text-muted-foreground">/ 5.00</span>
+                      <span className="text-sm text-muted-foreground">/ 100</span>
                     </div>
                     <div className="space-y-3">
                       <PillarProgress
                         label="Safety"
                         value={score.safetyScore ? Number(score.safetyScore) : null}
-                        maxValue={2.0}
+                        maxValue={100}
                       />
                       <PillarProgress
                         label="Workers' Comp"
                         value={score.workersCompScore ? Number(score.workersCompScore) : null}
-                        maxValue={1.0}
+                        maxValue={100}
                       />
                       <PillarProgress
                         label="Fleet"
                         value={score.fleetScore ? Number(score.fleetScore) : null}
-                        maxValue={2.0}
+                        maxValue={100}
                       />
                     </div>
                     {score.guardrailTriggered && (

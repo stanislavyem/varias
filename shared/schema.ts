@@ -170,10 +170,10 @@ export type InsertSubcontractorResponse = z.infer<typeof insertSubcontractorResp
 export type SubcontractorResponse = typeof subcontractorResponses.$inferSelect;
 
 export const RATING_BANDS = {
-  HIGH_RISK: { min: 1.0, max: 3.1999, label: "High Risk" },
-  ELEVATED_RISK: { min: 3.2, max: 3.7999, label: "Elevated Risk" },
-  MODERATE_RISK: { min: 3.8, max: 4.3999, label: "Moderate Risk" },
-  STRONG_LOW_RISK: { min: 4.4, max: 5.0, label: "Strong / Low Risk" },
+  HIGH_RISK: { min: 0, max: 54, label: "High Risk" },
+  ELEVATED_RISK: { min: 55, max: 69, label: "Elevated Risk" },
+  MODERATE_RISK: { min: 70, max: 84, label: "Moderate Risk" },
+  STRONG_LOW_RISK: { min: 85, max: 100, label: "Strong / Low Risk" },
 } as const;
 
 export const PILLAR_WEIGHTS = {
@@ -190,10 +190,15 @@ export const SUBCONTRACTOR_WEIGHTS = {
 
 export const ENABLE_GUARDRAIL_CAPPING = false;
 
-export function getRatingFromScore(score: number): string {
-  if (score < 3.2) return RATING_BANDS.HIGH_RISK.label;
-  if (score < 3.8) return RATING_BANDS.ELEVATED_RISK.label;
-  if (score < 4.4) return RATING_BANDS.MODERATE_RISK.label;
+export function rawScoreToDisplay(rawScore: number): number {
+  return ((rawScore - 1) / 4) * 100;
+}
+
+export function getRatingFromScore(rawScore: number): string {
+  const display = rawScoreToDisplay(rawScore);
+  if (display < 55) return RATING_BANDS.HIGH_RISK.label;
+  if (display < 70) return RATING_BANDS.ELEVATED_RISK.label;
+  if (display < 85) return RATING_BANDS.MODERATE_RISK.label;
   return RATING_BANDS.STRONG_LOW_RISK.label;
 }
 

@@ -50,7 +50,8 @@ The scoring logic uses a direct multiplication formula on a 1-5 scale:
 - Pillar subtotals sum directly to TotalScore (Safety max 2.0, WC max 1.0, Fleet max 2.0)
 - Constraints are optional user-controlled toggles (checkboxes), not automatic overrides
 - Response schema stores snapshot fields: pillar, topic, weight, questionTextOriginal, scaleNotesOriginal, constraintsOriginal
-- Rating bands: 1.0-3.199 High Risk, 3.2-3.799 Elevated Risk, 3.8-4.399 Moderate Risk, 4.4-5.0 Strong/Low Risk
+- Display score remapped to 0-100: displayScore = ((rawScore - 1) / 4) × 100
+- Rating bands (0-100 display): 0-54 High Risk, 55-69 Elevated Risk, 70-84 Moderate Risk, 85-100 Strong/Low Risk
 - Scoring debug endpoint: GET /api/assessments/:id/scoring-debug
 
 ### Build System

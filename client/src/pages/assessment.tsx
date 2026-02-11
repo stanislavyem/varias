@@ -312,9 +312,9 @@ export default function AssessmentPage() {
                 {isComplete && scoreSnapshot?.overallScore ? (
                   <>
                     <p className="text-5xl font-bold" data-testid="text-overall-score">
-                      {Number(scoreSnapshot.overallScore).toFixed(2)}
+                      {Number(scoreSnapshot.overallScore).toFixed(0)}
                     </p>
-                    <p className="text-sm text-muted-foreground mt-1">Total Score (1.00 - 5.00)</p>
+                    <p className="text-sm text-muted-foreground mt-1">Overall Risk Score (0 - 100)</p>
                     {scoreSnapshot.overallRating && (
                       <div className="mt-4">
                         <RatingBadge rating={scoreSnapshot.overallRating} />
@@ -343,7 +343,7 @@ export default function AssessmentPage() {
                         ? Number(scoreSnapshot.safetyScore)
                         : null
                     }
-                    maxValue={PILLAR_WEIGHTS.Safety * 5}
+                    maxValue={100}
                   />
                   <PillarProgress
                     label="Workers' Comp"
@@ -352,7 +352,7 @@ export default function AssessmentPage() {
                         ? Number(scoreSnapshot.workersCompScore)
                         : null
                     }
-                    maxValue={PILLAR_WEIGHTS.WorkersComp * 5}
+                    maxValue={100}
                   />
                   <PillarProgress
                     label="Fleet"
@@ -361,10 +361,10 @@ export default function AssessmentPage() {
                         ? Number(scoreSnapshot.fleetScore)
                         : null
                     }
-                    maxValue={PILLAR_WEIGHTS.Fleet * 5}
+                    maxValue={100}
                   />
                   <div className="pt-2 border-t text-xs text-muted-foreground">
-                    Pillar subtotals sum to Total Score
+                    0-100 scale per pillar
                   </div>
                 </div>
               )}

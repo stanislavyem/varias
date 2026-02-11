@@ -200,7 +200,7 @@ export default function OrganizationDetailPage() {
           title="Overall Score"
           value={
             latestScore?.overallScore
-              ? Number(latestScore.overallScore).toFixed(1)
+              ? Number(latestScore.overallScore).toFixed(0)
               : null
           }
           icon={TrendingUp}

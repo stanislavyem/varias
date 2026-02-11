@@ -14,6 +14,7 @@ import {
   calculateQuestionScore,
   applyConstraints,
   getRatingFromScore,
+  rawScoreToDisplay,
   PILLAR_WEIGHTS,
   insertOrganizationSchema,
   insertAssessmentSchema,
@@ -716,7 +717,8 @@ export async function registerRoutes(
       });
 
       res.json({
-        totalScore: totalScore.toFixed(3),
+        rawScore: totalScore.toFixed(3),
+        displayScore: rawScoreToDisplay(totalScore).toFixed(1),
         overallRating: getRatingFromScore(totalScore),
         pillarSubtotals: pillarPts,
         topicSubtotals: topicPts,
