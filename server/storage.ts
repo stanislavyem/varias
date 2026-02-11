@@ -36,6 +36,7 @@ import {
   type UserProfile,
   calculateNormScore,
   calculateWeightedPts,
+  applyConstraints,
   getRatingFromScore,
   PILLAR_WEIGHTS,
 } from "@shared/schema";
@@ -178,9 +179,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async seedQuestions(questionsData: InsertQuestion[]): Promise<void> {
-    const existing = await db.select().from(questions).limit(1);
-    if (existing.length === 0) {
-      await db.insert(questions).values(questionsData);
+    const newIds = questionsData.map(q => q.id);
+    const existing = await db.select({ id: questions.id }).from(questions);
+    const oldIds = existing.map(q => q.id).filter(id => !newIds.includes(id));
+    if (oldIds.length > 0) {
+      await db.delete(responses).where(inArray(responses.questionId, oldIds));
+      await db.delete(questions).where(inArray(questions.id, oldIds));
+    }
+    for (const q of questionsData) {
+      await db.insert(questions).values(q)
+        .onConflictDoUpdate({
+          target: questions.id,
+          set: {
+            pillar: q.pillar,
+            topic: q.topic,
+            text: q.text,
+            weight: q.weight,
+            scaleNotes: q.scaleNotes,
+            constraints: q.constraints,
+            sortOrder: q.sortOrder,
+          },
+        });
     }
   }
 
@@ -222,8 +241,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertResponse(response: InsertResponse): Promise<Response> {
-    const normScore = calculateNormScore(response.responseValue);
     const question = await db.select().from(questions).where(eq(questions.id, response.questionId)).then(r => r[0]);
+    const scoredValue = applyConstraints(response.responseValue, question?.constraints || null);
+    const normScore = calculateNormScore(scoredValue);
     const weightedPts = calculateWeightedPts(normScore, Number(question?.weight || 0));
 
     const existing = await db.select().from(responses)
@@ -374,8 +394,10 @@ export class DatabaseStorage implements IStorage {
     const allResponses = await this.getResponsesByAssessment(assessmentId);
     const subResponse = await this.getSubcontractorResponse(assessmentId);
 
-    const completionPct = (allResponses.length / allQuestions.length) * 100;
-    const isComplete = allResponses.length === allQuestions.length;
+    const validQuestionIds = new Set(allQuestions.map(q => q.id));
+    const validResponses = allResponses.filter(r => validQuestionIds.has(r.questionId));
+    const completionPct = (validResponses.length / allQuestions.length) * 100;
+    const isComplete = validResponses.length === allQuestions.length;
 
     let overallScore: number | null = null;
     let overallRating: string | null = null;
@@ -384,23 +406,26 @@ export class DatabaseStorage implements IStorage {
     let fleetScore: number | null = null;
 
     if (isComplete) {
-      // Calculate overall score: 100 * SUM(WeightedPts) across all 20 questions
-      const totalWeightedPts = allResponses.reduce((sum, r) => sum + Number(r.weightedPts), 0);
-      overallScore = 100 * totalWeightedPts;
-      overallRating = getRatingFromScore(overallScore);
-
-      // Calculate pillar scores
       const questionMap = new Map(allQuestions.map(q => [q.id, q]));
       const pillarPts: Record<string, number> = { Safety: 0, WorkersComp: 0, Fleet: 0 };
+      let totalWeightedPts = 0;
 
-      for (const response of allResponses) {
+      for (const response of validResponses) {
         const question = questionMap.get(response.questionId);
         if (question) {
-          pillarPts[question.pillar] = (pillarPts[question.pillar] || 0) + Number(response.weightedPts);
+          const rawResponse = Number(response.responseValue);
+          const scoredResponse = applyConstraints(rawResponse, question.constraints);
+          const normScore = calculateNormScore(scoredResponse);
+          const weight = Number(question.weight);
+          const weightedPts = calculateWeightedPts(normScore, weight);
+          totalWeightedPts += weightedPts;
+          pillarPts[question.pillar] = (pillarPts[question.pillar] || 0) + weightedPts;
         }
       }
 
-      // Pillar score = (sum of weightedPts for pillar / pillar weight share) * 100
+      overallScore = 100 * totalWeightedPts;
+      overallRating = getRatingFromScore(overallScore);
+
       safetyScore = (pillarPts.Safety / PILLAR_WEIGHTS.Safety) * 100;
       workersCompScore = (pillarPts.WorkersComp / PILLAR_WEIGHTS.WorkersComp) * 100;
       fleetScore = (pillarPts.Fleet / PILLAR_WEIGHTS.Fleet) * 100;

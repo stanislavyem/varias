@@ -1,0 +1,91 @@
+You are updating an existing risk assessment web app. The source of truth is an Excel workbook named "Risk_App_Executive_Dashboard.xlsx" that will be uploaded into the Replit project. DO NOT change, rewrite, paraphrase, “clean up,” or otherwise modify any question wording or scale wording. Use the text exactly as it appears in the workbook.
+
+GOAL
+Update the questionnaire feature so the app renders all questions from the Excel sheet:
+Sheet name: "Questions"
+Required columns (exact names):
+- QuestionID
+- Pillar
+- Topic
+- Question Text
+- RespType
+- Weight
+- ScaleNotes
+- Constraints
+
+The app must:
+1) Render the questions in the UI using ONLY the "Question Text" column.
+2) Show the scoring rubric using ONLY the "ScaleNotes" column.
+3) Capture responses, enforce constraints, compute weighted scores, and store results.
+
+DATA LOADING REQUIREMENTS
+- Read the workbook at runtime (preferred) or on server start, using a reliable Excel parser.
+- Load the "Questions" sheet into memory.
+- Preserve row order as shown in the sheet.
+- Treat "Question Text" and "ScaleNotes" as immutable strings.
+
+QUESTION PRESENTATION REQUIREMENTS
+- Group questions by Pillar, then Topic (use those exact columns for headings).
+- For each question:
+  - Display QuestionID
+  - Display "Question Text" verbatim
+  - Provide a 1–5 response control when RespType == "Scale1to5"
+  - Display ScaleNotes as a tooltip, expandable “Scoring Scale” panel, or info icon modal.
+  - Optionally display Constraints in a collapsible “Constraints” panel for internal users/admins.
+
+IMPORTANT: Some Question Text cells contain multiple follow-up questions in one sentence. Do NOT rewrite. If the UI needs to show them as separate lines for readability, you may split the display ONLY (not the stored source text) by punctuation (commas, “and”, question marks) but each displayed line must be an exact substring of the original Question Text with no edits. Store the original full Question Text as the canonical question text.
+
+SCORING REQUIREMENTS
+- Response scale: integer 1–5.
+- Weighted scoring:
+  - For each question: question_score = response_value * Weight
+  - Total score = sum(question_score) across all questions
+- Also compute per-Pillar and per-Topic subtotals using the Weight column.
+- Constraints column:
+  - Constraints are human-readable rules. Implement a simple constraint engine:
+    - If the Constraints cell contains “cap at X” (e.g., “cap at 3”), then if response_value > X, set response_value_used_for_scoring = X.
+    - If Constraints indicates a minimum (e.g., “min X”), enforce minimum similarly.
+    - Always keep the user’s raw response stored; apply constraints only to “scored response.”
+  - If constraints parsing fails, log the constraint and default to no cap/min for that question (do not crash).
+
+PERSISTENCE REQUIREMENTS
+Create/extend a database schema for:
+- assessments (assessment_id, company_id, created_at, created_by, total_score, etc.)
+- assessment_responses (assessment_id, QuestionID, question_text_original, response_raw, response_scored, weight, pillar, topic, scale_notes_original)
+- computed_scores (assessment_id, pillar, topic, subtotal_score)
+
+Ensure “question_text_original” and “scale_notes_original” are stored verbatim from Excel at time of assessment (so future Excel edits don’t change historical records).
+
+API/STATE REQUIREMENTS
+- Provide an endpoint or internal service that returns:
+  - The question set (from Questions sheet)
+  - The scoring scale notes per question
+- Ensure the front-end reads from this service so updates to the workbook automatically update questions/scales.
+
+UI/UX REQUIREMENTS
+- Questionnaire page:
+  - Left: navigation (Pillar/Topic sections)
+  - Main: question cards
+  - Each question card includes:
+    - QuestionID
+    - Question Text (verbatim)
+    - 1–5 selection control
+    - “Scoring Scale” expandable section showing ScaleNotes verbatim
+- Progress indicator (e.g., “12/20 answered”)
+- Save Draft + Submit buttons
+- Validation: require all questions answered before submit (unless an admin toggle allows partials)
+- Confirmation screen showing:
+  - Total score
+  - Pillar breakdown
+  - Topic breakdown
+
+ACCEPTANCE TESTS (MUST PASS)
+1) App reads "Questions" sheet and renders exactly the number of rows present (currently 20).
+2) Every question displayed matches the Excel "Question Text" value exactly (character-for-character).
+3) Every scale panel matches Excel "ScaleNotes" exactly (character-for-character, including line breaks).
+4) Weighted score matches a manual calculation using response_value * Weight across all questions.
+5) If a constraint includes “cap at 3,” selecting 5 stores raw=5 but scores as 3.
+6) Database records store the original question text and scale notes verbatim.
+
+DELIVERABLE
+Implement the update end-to-end (Excel ingestion → UI rendering → response capture → scoring → persistence → results view) using the existing app structure and styling conventions. Do not change the wording in the Questions sheet text fields.

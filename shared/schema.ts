@@ -207,6 +207,44 @@ export function getRatingFromScore(score: number): string {
   return RATING_BANDS.STRONG_LOW_RISK.label;
 }
 
+export function parseConstraints(constraintText: string | null): { caps: number[]; mins: number[] } {
+  const result = { caps: [] as number[], mins: [] as number[] };
+  if (!constraintText) return result;
+  try {
+    const capMatches = constraintText.match(/cap(?:s)?\s+at\s+(\d+)/gi);
+    if (capMatches) {
+      for (const m of capMatches) {
+        const num = m.match(/(\d+)/);
+        if (num) result.caps.push(parseInt(num[1], 10));
+      }
+    }
+    const minMatches = constraintText.match(/min(?:imum)?\s+(?:at\s+)?(\d+)/gi);
+    if (minMatches) {
+      for (const m of minMatches) {
+        const num = m.match(/(\d+)/);
+        if (num) result.mins.push(parseInt(num[1], 10));
+      }
+    }
+  } catch {
+    // If parsing fails, default to no constraints
+  }
+  return result;
+}
+
+export function applyConstraints(responseValue: number, constraintText: string | null): number {
+  const { caps, mins } = parseConstraints(constraintText);
+  let scored = responseValue;
+  if (mins.length > 0) {
+    const minVal = Math.max(...mins);
+    scored = Math.max(scored, minVal);
+  }
+  if (caps.length > 0) {
+    const capVal = Math.min(...caps);
+    scored = Math.min(scored, capVal);
+  }
+  return scored;
+}
+
 // Helper to calculate normalized score
 export function calculateNormScore(response: number): number {
   return (response - 1) / 4;

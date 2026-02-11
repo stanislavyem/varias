@@ -13,11 +13,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { RatingBadge } from "@/components/rating-badge";
 import { PillarProgress } from "@/components/pillar-progress";
 import { StatusBadge } from "@/components/status-badge";
@@ -28,7 +23,6 @@ import {
   Info,
   Shield,
   CheckCircle2,
-  Save,
   Send,
   HardHat,
   Truck,
@@ -371,27 +365,16 @@ interface QuestionCardProps {
 
 function QuestionCard({ question, value, onChange, disabled }: QuestionCardProps) {
   return (
-    <Card className="border-l-4 border-l-primary/20" data-testid={`question-card-${question.id}`}>
+    <Card data-testid={`question-card-${question.id}`}>
       <CardContent className="p-4 space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <p className="font-medium">{question.text}</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              ID: {question.id} • Weight: {Number(question.weight).toFixed(4)}
-            </p>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-mono text-muted-foreground">{question.id}</span>
+            {value && (
+              <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+            )}
           </div>
-          {question.scaleNotes && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="flex-shrink-0">
-                  <Info className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="left" className="max-w-xs">
-                <p className="text-sm">{question.scaleNotes}</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
+          <p className="font-medium" data-testid={`text-question-${question.id}`}>{question.text}</p>
         </div>
 
         <RadioGroup
@@ -418,25 +401,38 @@ function QuestionCard({ question, value, onChange, disabled }: QuestionCardProps
           ))}
         </RadioGroup>
 
-        {question.constraints && (
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="guidance" className="border-none">
-              <AccordionTrigger className="text-sm py-2 hover:no-underline">
-                Guidance
+        <Accordion type="single" collapsible className="w-full">
+          {question.scaleNotes && (
+            <AccordionItem value="scale" className="border-none">
+              <AccordionTrigger className="text-sm py-2 hover:no-underline" data-testid={`trigger-scale-${question.id}`}>
+                <span className="flex items-center gap-2">
+                  <Info className="h-3.5 w-3.5" />
+                  Scoring Scale
+                </span>
               </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground">
-                {question.constraints}
+              <AccordionContent data-testid={`content-scale-${question.id}`}>
+                <div className="text-sm text-muted-foreground whitespace-pre-line">
+                  {question.scaleNotes}
+                </div>
               </AccordionContent>
             </AccordionItem>
-          </Accordion>
-        )}
-
-        {value && (
-          <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>Answered</span>
-          </div>
-        )}
+          )}
+          {question.constraints && (
+            <AccordionItem value="constraints" className="border-none">
+              <AccordionTrigger className="text-sm py-2 hover:no-underline" data-testid={`trigger-constraints-${question.id}`}>
+                <span className="flex items-center gap-2">
+                  <Shield className="h-3.5 w-3.5" />
+                  Constraints
+                </span>
+              </AccordionTrigger>
+              <AccordionContent data-testid={`content-constraints-${question.id}`}>
+                <div className="text-sm text-muted-foreground">
+                  {question.constraints}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          )}
+        </Accordion>
       </CardContent>
     </Card>
   );
