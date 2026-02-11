@@ -381,7 +381,7 @@ function QuestionCard({ question, value, onChange, disabled }: QuestionCardProps
           className="flex gap-2"
         >
           {[1, 2, 3, 4, 5].map((score) => (
-            <div key={score} className="flex-1">
+            <div key={score} className="flex-1 relative">
               <RadioGroupItem
                 value={score.toString()}
                 id={`${question.id}-${score}`}
