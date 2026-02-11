@@ -20,6 +20,16 @@ import { StatusBadge } from "@/components/status-badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   ArrowLeft,
   Info,
   Shield,
@@ -29,6 +39,7 @@ import {
   Truck,
   Users,
   AlertTriangle,
+  Trash2,
 } from "lucide-react";
 import type { Assessment, Question, Response, ScoreSnapshot } from "@shared/schema";
 import { parseConstraints } from "@shared/schema";
@@ -55,6 +66,7 @@ export default function AssessmentPage() {
   const queryClient = useQueryClient();
   const [localResponses, setLocalResponses] = useState<Record<string, number>>({});
   const [localConstraints, setLocalConstraints] = useState<Record<string, boolean>>({});
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data, isLoading, error } = useQuery<AssessmentDetail>({
     queryKey: ["/api/assessments", assessmentId],
@@ -114,6 +126,28 @@ export default function AssessmentPage() {
       toast({
         title: "Error",
         description: "Failed to submit assessment. Please ensure all questions are answered.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", `/api/assessments/${assessmentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/assessments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      toast({
+        title: "Assessment deleted",
+        description: "The assessment has been permanently removed.",
+      });
+      navigate(`/organizations/${data?.assessment.organizationId || ""}`);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete assessment. Please try again.",
         variant: "destructive",
       });
     },
@@ -204,6 +238,14 @@ export default function AssessmentPage() {
         </div>
         <div className="flex items-center gap-3">
           <StatusBadge status={assessment.status} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowDeleteDialog(true)}
+            data-testid="button-delete-assessment"
+          >
+            <Trash2 className="h-4 w-4 text-muted-foreground" />
+          </Button>
           {!isSubmitted && isComplete && (
             <Button
               onClick={() => submitMutation.mutate()}
@@ -379,6 +421,28 @@ export default function AssessmentPage() {
           </Card>
         </div>
       </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this assessment for {organizationName},
+              including all responses and scores. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteMutation.mutate()}
+              className="bg-destructive text-destructive-foreground"
+              data-testid="button-confirm-delete"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

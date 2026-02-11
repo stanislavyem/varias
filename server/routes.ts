@@ -449,6 +449,21 @@ export async function registerRoutes(
     }
   });
 
+  app.delete("/api/assessments/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const assessment = await storage.getAssessment(id);
+      if (!assessment) {
+        return res.status(404).json({ message: "Assessment not found" });
+      }
+      await storage.deleteAssessment(id);
+      res.json({ message: "Assessment deleted" });
+    } catch (error) {
+      console.error("Delete assessment error:", error);
+      res.status(500).json({ message: "Failed to delete assessment" });
+    }
+  });
+
   // Subcontractor
   app.get("/api/assessments/:id/subcontractor", isAuthenticated, async (req: any, res) => {
     try {

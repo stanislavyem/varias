@@ -67,6 +67,7 @@ export interface IStorage {
   getAssessmentsByOrganization(orgId: string): Promise<Assessment[]>;
   createAssessment(assessment: InsertAssessment): Promise<Assessment>;
   updateAssessmentStatus(id: string, status: string): Promise<Assessment>;
+  deleteAssessment(id: string): Promise<void>;
   
   // Responses
   getResponsesByAssessment(assessmentId: string): Promise<Response[]>;
@@ -233,6 +234,15 @@ export class DatabaseStorage implements IStorage {
       .where(eq(assessments.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteAssessment(id: string): Promise<void> {
+    await db.transaction(async (tx) => {
+      await tx.delete(responses).where(eq(responses.assessmentId, id));
+      await tx.delete(scoreSnapshots).where(eq(scoreSnapshots.assessmentId, id));
+      await tx.delete(subcontractorResponses).where(eq(subcontractorResponses.assessmentId, id));
+      await tx.delete(assessments).where(eq(assessments.id, id));
+    });
   }
 
   // Responses

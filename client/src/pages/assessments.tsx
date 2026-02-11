@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { RatingBadge } from "@/components/rating-badge";
 import { Link } from "wouter";
@@ -21,7 +31,10 @@ import {
   Building2,
   ArrowRight,
   TrendingUp,
+  Trash2,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import type { Assessment, ScoreSnapshot } from "@shared/schema";
 
 interface AssessmentWithDetails extends Assessment {
@@ -32,9 +45,27 @@ interface AssessmentWithDetails extends Assessment {
 export default function AssessmentsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [deleteTarget, setDeleteTarget] = useState<AssessmentWithDetails | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: assessments, isLoading } = useQuery<AssessmentWithDetails[]>({
     queryKey: ["/api/assessments"],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/assessments/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/assessments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      toast({ title: "Assessment deleted", description: "The assessment has been permanently removed." });
+      setDeleteTarget(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete assessment. Please try again.", variant: "destructive" });
+    },
   });
 
   const filteredAssessments = assessments?.filter((assessment) => {
@@ -93,54 +124,68 @@ export default function AssessmentsPage() {
       ) : filteredAssessments && filteredAssessments.length > 0 ? (
         <div className="space-y-4">
           {filteredAssessments.map((assessment) => (
-            <Link key={assessment.id} href={`/assessments/${assessment.id}`}>
-              <Card className="hover-elevate cursor-pointer" data-testid={`card-assessment-${assessment.id}`}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between gap-4">
+            <Card key={assessment.id} className="hover-elevate" data-testid={`card-assessment-${assessment.id}`}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <Link href={`/assessments/${assessment.id}`} className="flex-1 cursor-pointer">
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ClipboardList className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-wrap">
                           <h3 className="font-semibold">
                             Assessment #{assessment.id.slice(0, 8)}
                           </h3>
                           <StatusBadge status={assessment.status} />
                         </div>
-                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground flex-wrap">
                           <Building2 className="h-3 w-3" />
                           <span>{assessment.organizationName}</span>
-                          <span>•</span>
+                          <span>·</span>
                           <span>
                             {new Date(assessment.createdAt!).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      {assessment.score?.overallScore && (
-                        <div className="text-right hidden sm:block">
-                          <div className="flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-2xl font-bold">
-                              {Number(assessment.score.overallScore).toFixed(0)}
-                            </span>
-                          </div>
-                          {assessment.score.overallRating && (
-                            <RatingBadge
-                              rating={assessment.score.overallRating}
-                              className="mt-1"
-                            />
-                          )}
+                  </Link>
+                  <div className="flex items-center gap-3">
+                    {assessment.score?.overallScore && (
+                      <div className="text-right hidden sm:block">
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-2xl font-bold">
+                            {Number(assessment.score.overallScore).toFixed(0)}
+                          </span>
                         </div>
-                      )}
+                        {assessment.score.overallRating && (
+                          <RatingBadge
+                            rating={assessment.score.overallRating}
+                            className="mt-1"
+                          />
+                        )}
+                      </div>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteTarget(assessment);
+                      }}
+                      data-testid={`button-delete-assessment-${assessment.id}`}
+                    >
+                      <Trash2 className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                    <Link href={`/assessments/${assessment.id}`}>
                       <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                    </div>
+                    </Link>
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       ) : (
@@ -161,6 +206,29 @@ export default function AssessmentsPage() {
           </CardContent>
         </Card>
       )}
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this assessment
+              {deleteTarget?.organizationName && ` for ${deleteTarget.organizationName}`},
+              including all responses and scores. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+              className="bg-destructive text-destructive-foreground"
+              data-testid="button-confirm-delete"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
