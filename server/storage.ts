@@ -36,7 +36,6 @@ import {
   type UserProfile,
   calculateNormScore,
   calculateWeightedPts,
-  applyConstraints,
   getRatingFromScore,
   PILLAR_WEIGHTS,
 } from "@shared/schema";
@@ -242,8 +241,7 @@ export class DatabaseStorage implements IStorage {
 
   async upsertResponse(response: InsertResponse): Promise<Response> {
     const question = await db.select().from(questions).where(eq(questions.id, response.questionId)).then(r => r[0]);
-    const scoredValue = applyConstraints(response.responseValue, question?.constraints || null);
-    const normScore = calculateNormScore(scoredValue);
+    const normScore = calculateNormScore(response.responseValue);
     const weightedPts = calculateWeightedPts(normScore, Number(question?.weight || 0));
 
     const existing = await db.select().from(responses)
@@ -414,8 +412,7 @@ export class DatabaseStorage implements IStorage {
         const question = questionMap.get(response.questionId);
         if (question) {
           const rawResponse = Number(response.responseValue);
-          const scoredResponse = applyConstraints(rawResponse, question.constraints);
-          const normScore = calculateNormScore(scoredResponse);
+          const normScore = calculateNormScore(rawResponse);
           const weight = Number(question.weight);
           const weightedPts = calculateWeightedPts(normScore, weight);
           totalWeightedPts += weightedPts;
