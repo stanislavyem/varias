@@ -50,6 +50,7 @@ export interface IStorage {
   getOrganizations(userId: string): Promise<Organization[]>;
   getOrganization(id: string): Promise<Organization | undefined>;
   createOrganization(org: InsertOrganization, userId: string): Promise<Organization>;
+  deleteOrganization(id: string): Promise<void>;
   
   // Memberships
   getMemberships(userId: string): Promise<Membership[]>;
@@ -139,6 +140,26 @@ export class DatabaseStorage implements IStorage {
       organizationId: created.id,
     });
     return created;
+  }
+
+  async deleteOrganization(id: string): Promise<void> {
+    await db.transaction(async (tx) => {
+      const orgAssessments = await tx.select({ id: assessments.id }).from(assessments).where(eq(assessments.organizationId, id));
+      const assessmentIds = orgAssessments.map(a => a.id);
+
+      if (assessmentIds.length > 0) {
+        await tx.delete(responses).where(inArray(responses.assessmentId, assessmentIds));
+        await tx.delete(scoreSnapshots).where(inArray(scoreSnapshots.assessmentId, assessmentIds));
+        await tx.delete(subcontractorResponses).where(inArray(subcontractorResponses.assessmentId, assessmentIds));
+      }
+
+      await tx.delete(assessments).where(eq(assessments.organizationId, id));
+      await tx.delete(actionItems).where(eq(actionItems.organizationId, id));
+      await tx.delete(comments).where(eq(comments.organizationId, id));
+      await tx.delete(documents).where(eq(documents.organizationId, id));
+      await tx.delete(memberships).where(eq(memberships.organizationId, id));
+      await tx.delete(organizations).where(eq(organizations.id, id));
+    });
   }
 
   // Memberships

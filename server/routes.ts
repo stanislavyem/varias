@@ -221,6 +221,27 @@ export async function registerRoutes(
     }
   });
 
+  app.delete("/api/organizations/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const { id } = req.params;
+      const org = await storage.getOrganization(id);
+      if (!org) {
+        return res.status(404).json({ message: "Organization not found" });
+      }
+      const userMemberships = await storage.getMemberships(userId);
+      const isMember = userMemberships.some(m => m.organizationId === id);
+      if (!isMember) {
+        return res.status(403).json({ message: "You do not have permission to delete this organization" });
+      }
+      await storage.deleteOrganization(id);
+      res.json({ message: "Organization deleted successfully" });
+    } catch (error) {
+      console.error("Delete organization error:", error);
+      res.status(500).json({ message: "Failed to delete organization" });
+    }
+  });
+
   app.post("/api/organizations", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user?.claims?.sub;

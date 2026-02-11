@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRoute, Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +11,17 @@ import { PillarProgress } from "@/components/pillar-progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   ArrowLeft,
   Building2,
   ClipboardList,
@@ -20,6 +31,7 @@ import {
   Shield,
   FileText,
   CheckCircle2,
+  Trash2,
 } from "lucide-react";
 import type { Organization, Assessment, ActionItem, ScoreSnapshot, Document } from "@shared/schema";
 
@@ -36,6 +48,7 @@ export default function OrganizationDetailPage() {
   const orgId = params?.id;
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
 
   const { data, isLoading, error } = useQuery<OrganizationDetail>({
     queryKey: ["/api/organizations", orgId],
@@ -60,6 +73,28 @@ export default function OrganizationDetailPage() {
       toast({
         title: "Error",
         description: "Failed to create assessment. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteOrgMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", `/api/organizations/${orgId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/organizations"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      toast({
+        title: "Account deleted",
+        description: "The organization and all its data have been removed.",
+      });
+      navigate("/organizations");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete organization. Please try again.",
         variant: "destructive",
       });
     },
@@ -114,7 +149,34 @@ export default function OrganizationDetailPage() {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="gap-2 text-destructive" data-testid="button-delete-org">
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete this account?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete <strong>{organization.name}</strong> and all of its data including assessments, scores, action items, documents, and comments. This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteOrgMutation.mutate()}
+                  className="bg-destructive text-destructive-foreground"
+                  disabled={deleteOrgMutation.isPending}
+                  data-testid="button-confirm-delete"
+                >
+                  {deleteOrgMutation.isPending ? "Deleting..." : "Delete permanently"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Link href={`/organizations/${orgId}/actions/new`}>
             <Button variant="outline" className="gap-2" data-testid="button-new-action">
               <Plus className="h-4 w-4" />
