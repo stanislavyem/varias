@@ -80,9 +80,6 @@ export default function AssessmentPage() {
         responseValue: value,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/assessments", assessmentId] });
-    },
     onError: () => {
       toast({
         title: "Error",
