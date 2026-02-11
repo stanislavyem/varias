@@ -1,0 +1,108 @@
+You are fixing the scoring logic in my existing Risk App. The Excel workbook "Risk_App_Executive_Dashboard.xlsx" is the source of truth.
+
+SCOPE
+Fix scoring so it matches the workbook’s intent. Do NOT change question wording or scale notes. Only fix the scoring calculation, constraint handling, and breakdown totals.
+
+SOURCE DATA
+Workbook: Risk_App_Executive_Dashboard.xlsx
+Sheet: "Questions"
+Use these columns exactly:
+- QuestionID
+- Pillar
+- Topic
+- Question Text
+- Weight
+- RespType
+- ScaleNotes
+- Constraints
+
+RESPONSE MODEL
+Each question is answered on a 1–5 integer scale (RespType indicates this; treat as 1..5 unless a future RespType says otherwise).
+Store BOTH:
+- response_raw (the user-selected integer 1–5)
+- response_scored (the value after constraints are applied, still 1–5)
+
+CORE SCORING (PER QUESTION)
+For each question:
+1) raw = user response (1..5)
+2) scored = apply constraints (if any) to raw (see CONSTRAINT RULES below)
+3) question_score = scored * Weight
+
+TOTAL SCORE
+TotalScore = SUM(question_score) across ALL questions in the assessment.
+
+Because Weight values are designed to sum to 1.00 overall (verify), TotalScore should naturally be between 1.00 and 5.00.
+If weights do not sum to 1.00, still use the formula above (do not auto-normalize unless explicitly instructed). Instead, flag a warning in logs.
+
+BREAKDOWNS (ROLLUPS)
+Compute:
+- PillarSubtotals: for each Pillar, SUM(question_score) where question.Pillar == Pillar
+- TopicSubtotals: for each (Pillar, Topic), SUM(question_score) where matches
+
+IMPORTANT: Do NOT average pillar scores unless explicitly required. Use SUM of weighted scores for rollups so pillar totals add up to TotalScore.
+
+CONSTRAINT RULES (MUST IMPLEMENT)
+Constraints are stored as human-readable text in the Constraints column. They can cap or limit scoring.
+
+Implement the following robust behavior:
+
+A) Generic caps/mins
+- If Constraints contains a pattern like "cap at X" (X is 1..5), then:
+  scored = min(raw, X)
+- If Constraints contains a pattern like "min X" (X is 1..5), then:
+  scored = max(raw, X)
+
+B) Conditional caps (text-based triggers)
+Some constraints read like: "If <condition>, cap at X."
+We cannot automatically verify real-world conditions unless the app captures those condition inputs.
+Therefore implement this rule:
+- If the condition is NOT represented by a captured input field in the app, DO NOT attempt to infer it.
+- Instead, the app must either:
+  (1) expose a boolean “constraint condition met?” toggle for the assessor on that question (admin/assessor-only), OR
+  (2) treat conditional constraints as “manual apply” and let the assessor apply the cap.
+
+Implementation requirement:
+- Parse the numeric cap (X) from conditional constraints.
+- Provide a UI control (checkbox) on that question:
+  “Apply constraint cap” (default unchecked).
+- If checked -> scored = min(raw, X)
+- If unchecked -> scored = raw
+- Always store whether the constraint was applied (constraint_applied boolean) + cap_value.
+
+C) Fail-safe
+If Constraints is empty or cannot be parsed, scored = raw.
+Never crash or block submission due to constraint parsing.
+
+DATA PERSISTENCE
+In the database store per response:
+- assessment_id
+- QuestionID
+- question_text_original (verbatim from Excel at time of assessment)
+- pillar, topic
+- weight
+- response_raw
+- response_scored
+- question_score
+- scale_notes_original (verbatim from Excel)
+- constraints_original (verbatim from Excel)
+- constraint_applied (boolean)
+- constraint_cap_value (nullable)
+
+SCORING DEBUG OUTPUT (REQUIRED TO FIX BUGS)
+Add an internal debug view (or logs) that prints for each question:
+QuestionID | raw | scored | weight | question_score | constraint_applied | cap_value
+Then prints:
+TotalScore
+PillarSubtotals
+TopicSubtotals
+
+ACCEPTANCE TESTS (MUST PASS)
+1) Selecting a value 1–5 produces question_score = response_scored * Weight.
+2) TotalScore equals sum of all question_score.
+3) Pillar subtotals sum to TotalScore.
+4) If Constraints includes "cap at 3" and raw=5, then scored=3 and question_score=3*Weight (with constraint_applied true and cap_value=3).
+5) If Constraints includes conditional “If … cap at 2”, the app shows “Apply constraint cap” toggle; when enabled, scored is capped; when disabled, scored=raw.
+6) All calculations use floats with stable rounding (display to 2 decimals; store full precision).
+
+DELIVERABLE
+Update the scoring code and any necessary UI/data schema so the above logic is implemented end-to-end. Keep everything else unchanged.

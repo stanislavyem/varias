@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Accordion,
   AccordionContent,
@@ -27,8 +28,10 @@ import {
   HardHat,
   Truck,
   Users,
+  AlertTriangle,
 } from "lucide-react";
 import type { Assessment, Question, Response, ScoreSnapshot } from "@shared/schema";
+import { parseConstraints } from "@shared/schema";
 
 interface AssessmentDetail {
   assessment: Assessment;
@@ -51,6 +54,7 @@ export default function AssessmentPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [localResponses, setLocalResponses] = useState<Record<string, number>>({});
+  const [localConstraints, setLocalConstraints] = useState<Record<string, boolean>>({});
 
   const { data, isLoading, error } = useQuery<AssessmentDetail>({
     queryKey: ["/api/assessments", assessmentId],
@@ -60,10 +64,13 @@ export default function AssessmentPage() {
   useEffect(() => {
     if (data?.responses) {
       const existing: Record<string, number> = {};
+      const existingConstraints: Record<string, boolean> = {};
       Object.entries(data.responses).forEach(([qId, resp]) => {
         existing[qId] = resp.responseValue;
+        existingConstraints[qId] = resp.constraintApplied || false;
       });
       setLocalResponses(existing);
+      setLocalConstraints(existingConstraints);
     }
   }, [data?.responses]);
 
@@ -71,13 +78,16 @@ export default function AssessmentPage() {
     mutationFn: async ({
       questionId,
       value,
+      constraintApplied,
     }: {
       questionId: string;
       value: number;
+      constraintApplied: boolean;
     }) => {
       await apiRequest("POST", `/api/assessments/${assessmentId}/responses`, {
         questionId,
         responseValue: value,
+        constraintApplied,
       });
     },
     onError: () => {
@@ -111,7 +121,16 @@ export default function AssessmentPage() {
 
   const handleResponseChange = (questionId: string, value: number) => {
     setLocalResponses((prev) => ({ ...prev, [questionId]: value }));
-    saveResponseMutation.mutate({ questionId, value });
+    const constraintApplied = localConstraints[questionId] || false;
+    saveResponseMutation.mutate({ questionId, value, constraintApplied });
+  };
+
+  const handleConstraintToggle = (questionId: string, checked: boolean) => {
+    setLocalConstraints((prev) => ({ ...prev, [questionId]: checked }));
+    const value = localResponses[questionId];
+    if (value !== undefined) {
+      saveResponseMutation.mutate({ questionId, value, constraintApplied: checked });
+    }
   };
 
   if (isLoading) {
@@ -248,7 +267,9 @@ export default function AssessmentPage() {
                           key={question.id}
                           question={question}
                           value={localResponses[question.id]}
+                          constraintApplied={localConstraints[question.id] || false}
                           onChange={(value) => handleResponseChange(question.id, value)}
+                          onConstraintToggle={(checked) => handleConstraintToggle(question.id, checked)}
                           disabled={isSubmitted}
                         />
                       ))}
@@ -290,10 +311,10 @@ export default function AssessmentPage() {
               <div className="text-center py-4">
                 {isComplete && scoreSnapshot?.overallScore ? (
                   <>
-                    <p className="text-5xl font-bold">
-                      {Number(scoreSnapshot.overallScore).toFixed(1)}
+                    <p className="text-5xl font-bold" data-testid="text-overall-score">
+                      {Number(scoreSnapshot.overallScore).toFixed(2)}
                     </p>
-                    <p className="text-sm text-muted-foreground mt-1">Overall Score</p>
+                    <p className="text-sm text-muted-foreground mt-1">Total Score (1.00 - 5.00)</p>
                     {scoreSnapshot.overallRating && (
                       <div className="mt-4">
                         <RatingBadge rating={scoreSnapshot.overallRating} />
@@ -312,32 +333,41 @@ export default function AssessmentPage() {
                 )}
               </div>
 
-              <div className="space-y-4">
-                <PillarProgress
-                  label="Safety"
-                  value={
-                    scoreSnapshot?.safetyScore
-                      ? Number(scoreSnapshot.safetyScore)
-                      : null
-                  }
-                />
-                <PillarProgress
-                  label="Workers' Comp"
-                  value={
-                    scoreSnapshot?.workersCompScore
-                      ? Number(scoreSnapshot.workersCompScore)
-                      : null
-                  }
-                />
-                <PillarProgress
-                  label="Fleet"
-                  value={
-                    scoreSnapshot?.fleetScore
-                      ? Number(scoreSnapshot.fleetScore)
-                      : null
-                  }
-                />
-              </div>
+              {isComplete && scoreSnapshot?.overallScore && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium">Pillar Breakdown</h4>
+                  <PillarProgress
+                    label="Safety"
+                    value={
+                      scoreSnapshot?.safetyScore
+                        ? Number(scoreSnapshot.safetyScore)
+                        : null
+                    }
+                    maxValue={PILLAR_WEIGHTS.Safety * 5}
+                  />
+                  <PillarProgress
+                    label="Workers' Comp"
+                    value={
+                      scoreSnapshot?.workersCompScore
+                        ? Number(scoreSnapshot.workersCompScore)
+                        : null
+                    }
+                    maxValue={PILLAR_WEIGHTS.WorkersComp * 5}
+                  />
+                  <PillarProgress
+                    label="Fleet"
+                    value={
+                      scoreSnapshot?.fleetScore
+                        ? Number(scoreSnapshot.fleetScore)
+                        : null
+                    }
+                    maxValue={PILLAR_WEIGHTS.Fleet * 5}
+                  />
+                  <div className="pt-2 border-t text-xs text-muted-foreground">
+                    Pillar subtotals sum to Total Score
+                  </div>
+                </div>
+              )}
 
               {scoreSnapshot?.guardrailTriggered && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 text-sm">
@@ -353,14 +383,23 @@ export default function AssessmentPage() {
   );
 }
 
+const PILLAR_WEIGHTS = { Safety: 0.4, WorkersComp: 0.2, Fleet: 0.4 };
+
 interface QuestionCardProps {
   question: Question;
   value: number | undefined;
+  constraintApplied: boolean;
   onChange: (value: number) => void;
+  onConstraintToggle: (checked: boolean) => void;
   disabled: boolean;
 }
 
-function QuestionCard({ question, value, onChange, disabled }: QuestionCardProps) {
+function QuestionCard({ question, value, constraintApplied, onChange, onConstraintToggle, disabled }: QuestionCardProps) {
+  const hasConstraints = !!question.constraints;
+  const parsed = hasConstraints ? parseConstraints(question.constraints) : { caps: [], mins: [] };
+  const hasCap = parsed.caps.length > 0;
+  const capValue = hasCap ? Math.min(...parsed.caps) : null;
+
   return (
     <Card data-testid={`question-card-${question.id}`}>
       <CardContent className="p-4 space-y-4">
@@ -397,6 +436,25 @@ function QuestionCard({ question, value, onChange, disabled }: QuestionCardProps
             </div>
           ))}
         </RadioGroup>
+
+        {hasCap && (
+          <div className="flex items-center gap-3 p-3 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+            <Checkbox
+              id={`constraint-${question.id}`}
+              checked={constraintApplied}
+              onCheckedChange={(checked) => onConstraintToggle(!!checked)}
+              disabled={disabled}
+              data-testid={`checkbox-constraint-${question.id}`}
+            />
+            <Label
+              htmlFor={`constraint-${question.id}`}
+              className="text-sm cursor-pointer flex items-center gap-2"
+            >
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <span>Apply constraint cap (cap at {capValue})</span>
+            </Label>
+          </div>
+        )}
 
         <Accordion type="single" collapsible className="w-full">
           {question.scaleNotes && (

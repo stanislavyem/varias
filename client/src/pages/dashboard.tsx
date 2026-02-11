@@ -106,9 +106,9 @@ export default function DashboardPage() {
         />
         <ScoreCard
           title="Avg. Risk Score"
-          value={stats.avgScore !== null ? stats.avgScore.toFixed(1) : null}
+          value={stats.avgScore !== null ? stats.avgScore.toFixed(2) : null}
           icon={TrendingUp}
-          subtitle="Across all assessments"
+          subtitle="1.00 - 5.00 scale"
         />
       </div>
 
@@ -249,22 +249,25 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-3xl font-bold">
-                        {score.overallScore ? Number(score.overallScore).toFixed(1) : "—"}
+                        {score.overallScore ? Number(score.overallScore).toFixed(2) : "\u2014"}
                       </span>
-                      <span className="text-sm text-muted-foreground">/ 100</span>
+                      <span className="text-sm text-muted-foreground">/ 5.00</span>
                     </div>
                     <div className="space-y-3">
                       <PillarProgress
                         label="Safety"
                         value={score.safetyScore ? Number(score.safetyScore) : null}
+                        maxValue={2.0}
                       />
                       <PillarProgress
                         label="Workers' Comp"
                         value={score.workersCompScore ? Number(score.workersCompScore) : null}
+                        maxValue={1.0}
                       />
                       <PillarProgress
                         label="Fleet"
                         value={score.fleetScore ? Number(score.fleetScore) : null}
+                        maxValue={2.0}
                       />
                     </div>
                     {score.guardrailTriggered && (

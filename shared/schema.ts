@@ -3,10 +3,8 @@ import { pgTable, text, varchar, integer, decimal, timestamp, boolean, pgEnum } 
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Export auth models
 export * from "./models/auth";
 
-// Enums
 export const userRoleEnum = pgEnum("user_role", ["CARRIER", "AGENT", "INSURED"]);
 export const assessmentStatusEnum = pgEnum("assessment_status", ["DRAFT", "SUBMITTED", "CLOSED"]);
 export const actionStatusEnum = pgEnum("action_status", ["OPEN", "IN_PROGRESS", "DONE"]);
@@ -14,7 +12,6 @@ export const documentCategoryEnum = pgEnum("document_category", [
   "SAFETY_PROGRAM", "TRAINING", "COI", "OSHA_LOG", "INCIDENT_REPORT", "OTHER"
 ]);
 
-// User profiles with roles (extends auth users)
 export const userProfiles = pgTable("user_profiles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
@@ -22,7 +19,6 @@ export const userProfiles = pgTable("user_profiles", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Organizations (Insured Accounts)
 export const organizations = pgTable("organizations", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
@@ -31,7 +27,6 @@ export const organizations = pgTable("organizations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Memberships - links users to organizations
 export const memberships = pgTable("memberships", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
@@ -40,10 +35,9 @@ export const memberships = pgTable("memberships", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Questions - the 20 risk assessment questions
 export const questions = pgTable("questions", {
-  id: varchar("id").primaryKey(), // e.g., SAF-01
-  pillar: text("pillar").notNull(), // Safety, WorkersComp, Fleet
+  id: varchar("id").primaryKey(),
+  pillar: text("pillar").notNull(),
   topic: text("topic").notNull(),
   text: text("text").notNull(),
   weight: decimal("weight", { precision: 5, scale: 4 }).notNull(),
@@ -52,7 +46,6 @@ export const questions = pgTable("questions", {
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
-// Assessments
 export const assessments = pgTable("assessments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   organizationId: varchar("organization_id").notNull(),
@@ -62,17 +55,23 @@ export const assessments = pgTable("assessments", {
   submittedAt: timestamp("submitted_at"),
 });
 
-// Responses to questions
 export const responses = pgTable("responses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   assessmentId: varchar("assessment_id").notNull(),
   questionId: varchar("question_id").notNull(),
-  responseValue: integer("response_value").notNull(), // 1-5
-  normScore: decimal("norm_score", { precision: 5, scale: 4 }).notNull(),
-  weightedPts: decimal("weighted_pts", { precision: 10, scale: 6 }).notNull(),
+  responseValue: integer("response_value").notNull(),
+  responseScoredValue: integer("response_scored_value").notNull(),
+  questionScore: decimal("question_score", { precision: 10, scale: 6 }).notNull(),
+  constraintApplied: boolean("constraint_applied").notNull().default(false),
+  constraintCapValue: integer("constraint_cap_value"),
+  pillar: text("pillar"),
+  topic: text("topic"),
+  weight: decimal("weight", { precision: 5, scale: 4 }),
+  questionTextOriginal: text("question_text_original"),
+  scaleNotesOriginal: text("scale_notes_original"),
+  constraintsOriginal: text("constraints_original"),
 });
 
-// Score Snapshots
 export const scoreSnapshots = pgTable("score_snapshots", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   assessmentId: varchar("assessment_id").notNull(),
@@ -87,7 +86,6 @@ export const scoreSnapshots = pgTable("score_snapshots", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Action Items
 export const actionItems = pgTable("action_items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   organizationId: varchar("organization_id").notNull(),
@@ -103,7 +101,6 @@ export const actionItems = pgTable("action_items", {
   closedAt: timestamp("closed_at"),
 });
 
-// Comments
 export const comments = pgTable("comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   organizationId: varchar("organization_id").notNull(),
@@ -114,7 +111,6 @@ export const comments = pgTable("comments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Documents
 export const documents = pgTable("documents", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   organizationId: varchar("organization_id").notNull(),
@@ -127,19 +123,17 @@ export const documents = pgTable("documents", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Subcontractor Sub-Score responses
 export const subcontractorResponses = pgTable("subcontractor_responses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   assessmentId: varchar("assessment_id").notNull(),
-  safetyTrainingScore: integer("safety_training_score"), // 1-5
-  insuranceVerificationScore: integer("insurance_verification_score"), // 1-5
-  coverageContractScore: integer("coverage_contract_score"), // 1-5
+  safetyTrainingScore: integer("safety_training_score"),
+  insuranceVerificationScore: integer("insurance_verification_score"),
+  coverageContractScore: integer("coverage_contract_score"),
   weightedAvg: decimal("weighted_avg", { precision: 5, scale: 3 }),
   guardrailTriggered: boolean("guardrail_triggered").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Insert schemas
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true, createdAt: true });
 export const insertOrganizationSchema = createInsertSchema(organizations).omit({ id: true, createdAt: true });
 export const insertMembershipSchema = createInsertSchema(memberships).omit({ id: true, createdAt: true });
@@ -152,7 +146,6 @@ export const insertCommentSchema = createInsertSchema(comments).omit({ id: true,
 export const insertDocumentSchema = createInsertSchema(documents).omit({ id: true, createdAt: true });
 export const insertSubcontractorResponseSchema = createInsertSchema(subcontractorResponses).omit({ id: true, createdAt: true });
 
-// Types
 export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
 export type UserProfile = typeof userProfiles.$inferSelect;
 export type InsertOrganization = z.infer<typeof insertOrganizationSchema>;
@@ -176,12 +169,11 @@ export type Document = typeof documents.$inferSelect;
 export type InsertSubcontractorResponse = z.infer<typeof insertSubcontractorResponseSchema>;
 export type SubcontractorResponse = typeof subcontractorResponses.$inferSelect;
 
-// Scoring constants from the Config sheet
 export const RATING_BANDS = {
-  HIGH_RISK: { min: 0, max: 54.999, label: "High Risk" },
-  ELEVATED_RISK: { min: 55, max: 69.999, label: "Elevated Risk" },
-  MODERATE_RISK: { min: 70, max: 84.999, label: "Moderate Risk" },
-  STRONG_LOW_RISK: { min: 85, max: 100, label: "Strong / Low Risk" },
+  HIGH_RISK: { min: 1.0, max: 3.1999, label: "High Risk" },
+  ELEVATED_RISK: { min: 3.2, max: 3.7999, label: "Elevated Risk" },
+  MODERATE_RISK: { min: 3.8, max: 4.3999, label: "Moderate Risk" },
+  STRONG_LOW_RISK: { min: 4.4, max: 5.0, label: "Strong / Low Risk" },
 } as const;
 
 export const PILLAR_WEIGHTS = {
@@ -196,14 +188,12 @@ export const SUBCONTRACTOR_WEIGHTS = {
   coverageContract: 0.3,
 } as const;
 
-// Feature flag for guardrail capping (future implementation)
 export const ENABLE_GUARDRAIL_CAPPING = false;
 
-// Helper function to get rating from score
 export function getRatingFromScore(score: number): string {
-  if (score < 55) return RATING_BANDS.HIGH_RISK.label;
-  if (score < 70) return RATING_BANDS.ELEVATED_RISK.label;
-  if (score < 85) return RATING_BANDS.MODERATE_RISK.label;
+  if (score < 3.2) return RATING_BANDS.HIGH_RISK.label;
+  if (score < 3.8) return RATING_BANDS.ELEVATED_RISK.label;
+  if (score < 4.4) return RATING_BANDS.MODERATE_RISK.label;
   return RATING_BANDS.STRONG_LOW_RISK.label;
 }
 
@@ -226,7 +216,6 @@ export function parseConstraints(constraintText: string | null): { caps: number[
       }
     }
   } catch {
-    // If parsing fails, default to no constraints
   }
   return result;
 }
@@ -245,12 +234,6 @@ export function applyConstraints(responseValue: number, constraintText: string |
   return scored;
 }
 
-// Helper to calculate normalized score
-export function calculateNormScore(response: number): number {
-  return (response - 1) / 4;
-}
-
-// Helper to calculate weighted points
-export function calculateWeightedPts(normScore: number, weight: number): number {
-  return normScore * weight;
+export function calculateQuestionScore(scoredValue: number, weight: number): number {
+  return scoredValue * weight;
 }

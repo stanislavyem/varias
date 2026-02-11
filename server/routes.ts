@@ -11,14 +11,15 @@ import path from "path";
 import fs from "fs";
 import { z } from "zod";
 import {
-  calculateNormScore,
-  calculateWeightedPts,
+  calculateQuestionScore,
+  applyConstraints,
   getRatingFromScore,
   PILLAR_WEIGHTS,
   insertOrganizationSchema,
   insertAssessmentSchema,
   insertActionItemSchema,
   insertCommentSchema,
+  questions as questionsTable,
 } from "@shared/schema";
 
 // Validation schemas
@@ -33,6 +34,7 @@ const createAssessmentSchema = z.object({
 const createResponseSchema = z.object({
   questionId: z.string().min(1, "Question ID is required"),
   responseValue: z.number().int().min(1).max(5),
+  constraintApplied: z.boolean().optional().default(false),
 });
 
 const createActionSchema = z.object({
@@ -349,14 +351,15 @@ export async function registerRoutes(
           errors: validationResult.error.errors 
         });
       }
-      const { questionId, responseValue } = validationResult.data;
+      const { questionId, responseValue, constraintApplied } = validationResult.data;
 
       const response = await storage.upsertResponse({
         assessmentId: id,
         questionId,
         responseValue,
-        normScore: "0",
-        weightedPts: "0",
+        responseScoredValue: responseValue,
+        questionScore: "0",
+        constraintApplied: constraintApplied || false,
       });
 
       // Recalculate scores
@@ -612,7 +615,6 @@ export async function registerRoutes(
   // Scoring Test Route - for validation against Excel
   app.get("/dev/scoring-test", async (req, res) => {
     try {
-      // Accept 20 responses as query params: r1=3&r2=4&...&r20=5
       const responseValues: number[] = [];
       for (let i = 1; i <= 20; i++) {
         const val = parseInt(req.query[`r${i}`] as string);
@@ -630,54 +632,99 @@ export async function registerRoutes(
         return res.status(500).json({ message: "Questions not properly seeded" });
       }
 
-      // Calculate scores
-      let totalWeightedPts = 0;
+      const totalWeight = allQuestions.reduce((sum, q) => sum + Number(q.weight), 0);
+      let totalScore = 0;
       const pillarPts: Record<string, number> = { Safety: 0, WorkersComp: 0, Fleet: 0 };
       const details: any[] = [];
 
       allQuestions.forEach((q, i) => {
-        const response = responseValues[i];
-        const normScore = calculateNormScore(response);
-        const weightedPts = calculateWeightedPts(normScore, Number(q.weight));
+        const raw = responseValues[i];
+        const scored = raw;
+        const weight = Number(q.weight);
+        const questionScore = calculateQuestionScore(scored, weight);
         
-        totalWeightedPts += weightedPts;
-        pillarPts[q.pillar] = (pillarPts[q.pillar] || 0) + weightedPts;
+        totalScore += questionScore;
+        pillarPts[q.pillar] = (pillarPts[q.pillar] || 0) + questionScore;
 
         details.push({
           questionId: q.id,
           pillar: q.pillar,
-          response,
-          weight: Number(q.weight),
-          normScore: normScore.toFixed(4),
-          weightedPts: weightedPts.toFixed(6),
+          raw,
+          scored,
+          weight,
+          questionScore: questionScore.toFixed(6),
+          constraintApplied: false,
+          capValue: null,
         });
       });
 
-      const overallScore = 100 * totalWeightedPts;
-      const overallRating = getRatingFromScore(overallScore);
-
-      // Pillar scores
-      const safetyScore = (pillarPts.Safety / PILLAR_WEIGHTS.Safety) * 100;
-      const workersCompScore = (pillarPts.WorkersComp / PILLAR_WEIGHTS.WorkersComp) * 100;
-      const fleetScore = (pillarPts.Fleet / PILLAR_WEIGHTS.Fleet) * 100;
+      const overallRating = getRatingFromScore(totalScore);
 
       res.json({
-        overallScore: overallScore.toFixed(3),
+        totalScore: totalScore.toFixed(3),
         overallRating,
-        pillarScores: {
-          safety: safetyScore.toFixed(3),
-          workersComp: workersCompScore.toFixed(3),
-          fleet: fleetScore.toFixed(3),
+        weightsSum: totalWeight.toFixed(4),
+        pillarSubtotals: {
+          safety: pillarPts.Safety.toFixed(3),
+          workersComp: pillarPts.WorkersComp.toFixed(3),
+          fleet: pillarPts.Fleet.toFixed(3),
         },
+        pillarSubtotalsSum: (pillarPts.Safety + pillarPts.WorkersComp + pillarPts.Fleet).toFixed(3),
         formula: {
-          description: "OverallScore = 100 * SUM(WeightedPts); PillarScore = (SUM(PillarWeightedPts) / PillarWeightShare) * 100",
-          pillarWeightShares: PILLAR_WEIGHTS,
+          description: "TotalScore = SUM(scored * weight); PillarSubtotal = SUM(question_score) per pillar; PillarSubtotals sum to TotalScore",
         },
         details,
       });
     } catch (error) {
       console.error("Scoring test error:", error);
       res.status(500).json({ message: "Failed to calculate scores" });
+    }
+  });
+
+  // Scoring Debug Route - detailed scoring for an assessment
+  app.get("/api/assessments/:id/scoring-debug", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const allResponses = await storage.getResponsesByAssessment(id);
+      const allQuestions = await storage.getQuestions();
+      const questionMap = new Map(allQuestions.map(q => [q.id, q]));
+
+      const pillarPts: Record<string, number> = { Safety: 0, WorkersComp: 0, Fleet: 0 };
+      const topicPts: Record<string, number> = {};
+      let totalScore = 0;
+
+      const details = allResponses.map(r => {
+        const q = questionMap.get(r.questionId);
+        const qScore = Number(r.questionScore);
+        totalScore += qScore;
+        const pillar = r.pillar || q?.pillar || "";
+        if (pillar in pillarPts) {
+          pillarPts[pillar] = (pillarPts[pillar] || 0) + qScore;
+        }
+        const topicKey = `${pillar}|${r.topic || q?.topic || ""}`;
+        topicPts[topicKey] = (topicPts[topicKey] || 0) + qScore;
+
+        return {
+          questionId: r.questionId,
+          raw: r.responseValue,
+          scored: r.responseScoredValue,
+          weight: Number(r.weight || q?.weight),
+          questionScore: qScore.toFixed(6),
+          constraintApplied: r.constraintApplied,
+          capValue: r.constraintCapValue,
+        };
+      });
+
+      res.json({
+        totalScore: totalScore.toFixed(3),
+        overallRating: getRatingFromScore(totalScore),
+        pillarSubtotals: pillarPts,
+        topicSubtotals: topicPts,
+        details,
+      });
+    } catch (error) {
+      console.error("Scoring debug error:", error);
+      res.status(500).json({ message: "Failed to get scoring debug" });
     }
   });
 

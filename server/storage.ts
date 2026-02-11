@@ -34,8 +34,8 @@ import {
   type SubcontractorResponse,
   type InsertUserProfile,
   type UserProfile,
-  calculateNormScore,
-  calculateWeightedPts,
+  calculateQuestionScore,
+  applyConstraints,
   getRatingFromScore,
   PILLAR_WEIGHTS,
 } from "@shared/schema";
@@ -241,8 +241,19 @@ export class DatabaseStorage implements IStorage {
 
   async upsertResponse(response: InsertResponse): Promise<Response> {
     const question = await db.select().from(questions).where(eq(questions.id, response.questionId)).then(r => r[0]);
-    const normScore = calculateNormScore(response.responseValue);
-    const weightedPts = calculateWeightedPts(normScore, Number(question?.weight || 0));
+    const weight = Number(question?.weight || 0);
+
+    const constraintApplied = response.constraintApplied || false;
+    let scoredValue = response.responseValue;
+    let capValue: number | null = null;
+
+    if (constraintApplied && question?.constraints) {
+      scoredValue = applyConstraints(response.responseValue, question.constraints);
+      const { caps } = await import("@shared/schema").then(m => m.parseConstraints(question.constraints));
+      if (caps.length > 0) capValue = Math.min(...caps);
+    }
+
+    const questionScore = calculateQuestionScore(scoredValue, weight);
 
     const existing = await db.select().from(responses)
       .where(and(
@@ -250,22 +261,32 @@ export class DatabaseStorage implements IStorage {
         eq(responses.questionId, response.questionId)
       ));
 
+    const data = {
+      responseValue: response.responseValue,
+      responseScoredValue: scoredValue,
+      questionScore: questionScore.toFixed(6),
+      constraintApplied,
+      constraintCapValue: capValue,
+      pillar: question?.pillar || null,
+      topic: question?.topic || null,
+      weight: question?.weight || null,
+      questionTextOriginal: question?.text || null,
+      scaleNotesOriginal: question?.scaleNotes || null,
+      constraintsOriginal: question?.constraints || null,
+    };
+
     if (existing.length > 0) {
       const [updated] = await db.update(responses)
-        .set({
-          responseValue: response.responseValue,
-          normScore: normScore.toFixed(4),
-          weightedPts: weightedPts.toFixed(6),
-        })
+        .set(data)
         .where(eq(responses.id, existing[0].id))
         .returning();
       return updated;
     }
 
     const [created] = await db.insert(responses).values({
-      ...response,
-      normScore: normScore.toFixed(4),
-      weightedPts: weightedPts.toFixed(6),
+      assessmentId: response.assessmentId,
+      questionId: response.questionId,
+      ...data,
     }).returning();
     return created;
   }
@@ -397,6 +418,11 @@ export class DatabaseStorage implements IStorage {
     const completionPct = (validResponses.length / allQuestions.length) * 100;
     const isComplete = validResponses.length === allQuestions.length;
 
+    const totalWeight = allQuestions.reduce((sum, q) => sum + Number(q.weight), 0);
+    if (Math.abs(totalWeight - 1.0) > 0.001) {
+      console.warn(`[SCORING WARNING] Question weights sum to ${totalWeight.toFixed(4)}, expected 1.0000`);
+    }
+
     let overallScore: number | null = null;
     let overallRating: string | null = null;
     let safetyScore: number | null = null;
@@ -404,28 +430,24 @@ export class DatabaseStorage implements IStorage {
     let fleetScore: number | null = null;
 
     if (isComplete) {
-      const questionMap = new Map(allQuestions.map(q => [q.id, q]));
       const pillarPts: Record<string, number> = { Safety: 0, WorkersComp: 0, Fleet: 0 };
-      let totalWeightedPts = 0;
+      let totalScore = 0;
 
       for (const response of validResponses) {
-        const question = questionMap.get(response.questionId);
-        if (question) {
-          const rawResponse = Number(response.responseValue);
-          const normScore = calculateNormScore(rawResponse);
-          const weight = Number(question.weight);
-          const weightedPts = calculateWeightedPts(normScore, weight);
-          totalWeightedPts += weightedPts;
-          pillarPts[question.pillar] = (pillarPts[question.pillar] || 0) + weightedPts;
+        const qScore = Number(response.questionScore);
+        totalScore += qScore;
+        const pillar = response.pillar || "";
+        if (pillar in pillarPts) {
+          pillarPts[pillar] = (pillarPts[pillar] || 0) + qScore;
         }
       }
 
-      overallScore = 100 * totalWeightedPts;
+      overallScore = totalScore;
       overallRating = getRatingFromScore(overallScore);
 
-      safetyScore = (pillarPts.Safety / PILLAR_WEIGHTS.Safety) * 100;
-      workersCompScore = (pillarPts.WorkersComp / PILLAR_WEIGHTS.WorkersComp) * 100;
-      fleetScore = (pillarPts.Fleet / PILLAR_WEIGHTS.Fleet) * 100;
+      safetyScore = pillarPts.Safety;
+      workersCompScore = pillarPts.WorkersComp;
+      fleetScore = pillarPts.Fleet;
     }
 
     const guardrailTriggered = subResponse?.guardrailTriggered || false;
