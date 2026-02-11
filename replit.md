@@ -4,7 +4,7 @@
 
 Risk App is a full-stack web application for insurance risk assessment and action management. It enables carriers, agents, and insured organizations to evaluate safety, workers' compensation, and fleet risks through a structured 20-question assessment with precision scoring based on an Excel-defined scoring engine.
 
-The platform calculates normalized scores, weighted points, and overall risk ratings across three pillars (Safety 40%, Workers Comp 20%, Fleet 40%), with rating bands from "High Risk" to "Strong / Low Risk". It also includes a subcontractor sub-score assessment with guardrail triggering logic.
+The platform uses a direct multiplication scoring formula on a 1-5 scale across three pillars (Safety 40%, Workers Comp 20%, Fleet 40%), with rating bands from "High Risk" to "Strong / Low Risk". It also includes a subcontractor sub-score assessment with guardrail triggering logic.
 
 ## User Preferences
 
@@ -44,12 +44,14 @@ Preferred communication style: Simple, everyday language.
 - **SubcontractorResponses**: Separate mini-assessment with guardrail logic
 
 ### Scoring Engine (Do Not Modify)
-The scoring logic must match the Excel workbook exactly:
-- NormScore = (response - 1) / 4
-- WeightedPts = NormScore × Weight
-- OverallScore = 100 × SUM(WeightedPts)
-- Pillar scores use weight shares: Safety (0.4), WorkersComp (0.2), Fleet (0.4)
-- Rating bands: 0-54.999 High Risk, 55-69.999 Elevated Risk, 70-84.999 Moderate Risk, 85-100 Strong/Low Risk
+The scoring logic uses a direct multiplication formula on a 1-5 scale:
+- questionScore = scoredValue × weight (scoredValue is 1-5, may be capped by constraint)
+- TotalScore = SUM(all questionScores), range 1.00 - 5.00
+- Pillar subtotals sum directly to TotalScore (Safety max 2.0, WC max 1.0, Fleet max 2.0)
+- Constraints are optional user-controlled toggles (checkboxes), not automatic overrides
+- Response schema stores snapshot fields: pillar, topic, weight, questionTextOriginal, scaleNotesOriginal, constraintsOriginal
+- Rating bands: 1.0-3.199 High Risk, 3.2-3.799 Elevated Risk, 3.8-4.399 Moderate Risk, 4.4-5.0 Strong/Low Risk
+- Scoring debug endpoint: GET /api/assessments/:id/scoring-debug
 
 ### Build System
 - **Development**: TSX for running TypeScript directly
