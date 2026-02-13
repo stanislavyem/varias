@@ -51,6 +51,7 @@ export const assessments = pgTable("assessments", {
   organizationId: varchar("organization_id").notNull(),
   createdByUserId: varchar("created_by_user_id").notNull(),
   status: assessmentStatusEnum("status").notNull().default("DRAFT"),
+  notes: text("notes").default(""),
   createdAt: timestamp("created_at").defaultNow(),
   submittedAt: timestamp("submitted_at"),
 });
