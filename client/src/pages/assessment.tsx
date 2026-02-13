@@ -41,8 +41,6 @@ import {
   Users,
   AlertTriangle,
   Trash2,
-  StickyNote,
-  Loader2,
 } from "lucide-react";
 import type { Assessment, Question, Response, ScoreSnapshot } from "@shared/schema";
 import { parseConstraints } from "@shared/schema";
@@ -70,9 +68,8 @@ export default function AssessmentPage() {
   const [localResponses, setLocalResponses] = useState<Record<string, number>>({});
   const [localConstraints, setLocalConstraints] = useState<Record<string, boolean>>({});
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [localNotes, setLocalNotes] = useState("");
-  const [notesSaving, setNotesSaving] = useState(false);
-  const notesTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [localNotes, setLocalNotes] = useState<Record<string, string>>({});
+  const notesTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   const { data, isLoading, error } = useQuery<AssessmentDetail>({
     queryKey: ["/api/assessments", assessmentId],
@@ -93,35 +90,37 @@ export default function AssessmentPage() {
   }, [data?.responses]);
 
   useEffect(() => {
-    if (data?.assessment?.notes != null) {
-      setLocalNotes(data.assessment.notes);
+    if (data?.assessment?.notes) {
+      try {
+        const parsed = JSON.parse(data.assessment.notes);
+        if (typeof parsed === "object" && parsed !== null) {
+          setLocalNotes(parsed);
+        }
+      } catch {}
     }
   }, [data?.assessment?.notes]);
 
-  const saveNotes = useCallback(async (notes: string) => {
-    setNotesSaving(true);
+  const saveQuestionNotes = useCallback(async (questionId: string, notes: string) => {
     try {
-      await apiRequest("PATCH", `/api/assessments/${assessmentId}/notes`, { notes });
+      await apiRequest("PATCH", `/api/assessments/${assessmentId}/notes`, { questionId, notes });
     } catch {
       toast({
         title: "Error",
         description: "Failed to save notes. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setNotesSaving(false);
     }
   }, [assessmentId, toast]);
 
-  const handleNotesChange = useCallback((value: string) => {
-    setLocalNotes(value);
-    if (notesTimerRef.current) clearTimeout(notesTimerRef.current);
-    notesTimerRef.current = setTimeout(() => saveNotes(value), 800);
-  }, [saveNotes]);
+  const handleQuestionNotesChange = useCallback((questionId: string, value: string) => {
+    setLocalNotes((prev) => ({ ...prev, [questionId]: value }));
+    if (notesTimersRef.current[questionId]) clearTimeout(notesTimersRef.current[questionId]);
+    notesTimersRef.current[questionId] = setTimeout(() => saveQuestionNotes(questionId, value), 800);
+  }, [saveQuestionNotes]);
 
   useEffect(() => {
     return () => {
-      if (notesTimerRef.current) clearTimeout(notesTimerRef.current);
+      Object.values(notesTimersRef.current).forEach(clearTimeout);
     };
   }, []);
 
@@ -349,8 +348,10 @@ export default function AssessmentPage() {
                           question={question}
                           value={localResponses[question.id]}
                           constraintApplied={localConstraints[question.id] || false}
+                          notes={localNotes[question.id] || ""}
                           onChange={(value) => handleResponseChange(question.id, value)}
                           onConstraintToggle={(checked) => handleConstraintToggle(question.id, checked)}
+                          onNotesChange={(value) => handleQuestionNotesChange(question.id, value)}
                           disabled={isSubmitted}
                         />
                       ))}
@@ -382,33 +383,6 @@ export default function AssessmentPage() {
             </Card>
           </Link>
 
-          <Card data-testid="card-assessor-notes">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <div className="flex items-center gap-2">
-                <StickyNote className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-lg">Assessor Notes</CardTitle>
-              </div>
-              {notesSaving && (
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  <span>Saving...</span>
-                </div>
-              )}
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                placeholder="Add notes here while completing the assessment. These can help you draft action items later..."
-                value={localNotes}
-                onChange={(e) => handleNotesChange(e.target.value)}
-                disabled={isSubmitted}
-                className="min-h-[120px] resize-y text-sm"
-                data-testid="textarea-assessor-notes"
-              />
-              <p className="text-xs text-muted-foreground mt-2">
-                Notes auto-save as you type
-              </p>
-            </CardContent>
-          </Card>
         </div>
 
         <div className="space-y-6">
@@ -520,12 +494,14 @@ interface QuestionCardProps {
   question: Question;
   value: number | undefined;
   constraintApplied: boolean;
+  notes: string;
   onChange: (value: number) => void;
   onConstraintToggle: (checked: boolean) => void;
+  onNotesChange: (value: string) => void;
   disabled: boolean;
 }
 
-function QuestionCard({ question, value, constraintApplied, onChange, onConstraintToggle, disabled }: QuestionCardProps) {
+function QuestionCard({ question, value, constraintApplied, notes, onChange, onConstraintToggle, onNotesChange, disabled }: QuestionCardProps) {
   const hasConstraints = !!question.constraints;
   const parsed = hasConstraints ? parseConstraints(question.constraints) : { caps: [], mins: [] };
   const hasCap = parsed.caps.length > 0;
@@ -586,6 +562,17 @@ function QuestionCard({ question, value, constraintApplied, onChange, onConstrai
             </Label>
           </div>
         )}
+
+        <div className="space-y-1">
+          <Textarea
+            placeholder="Add notes for this question..."
+            value={notes}
+            onChange={(e) => onNotesChange(e.target.value)}
+            disabled={disabled}
+            className="min-h-[60px] resize-y text-sm"
+            data-testid={`textarea-notes-${question.id}`}
+          />
+        </div>
 
         <Accordion type="single" collapsible className="w-full">
           {question.scaleNotes && (

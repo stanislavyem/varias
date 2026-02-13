@@ -409,11 +409,20 @@ export async function registerRoutes(
       if (!orgIds.includes(assessment.organizationId)) {
         return res.status(403).json({ message: "Not authorized" });
       }
-      const { notes } = req.body;
-      if (typeof notes !== "string") {
-        return res.status(400).json({ message: "Notes must be a string" });
+      const { questionId, notes } = req.body;
+      if (typeof questionId !== "string" || typeof notes !== "string") {
+        return res.status(400).json({ message: "questionId and notes are required strings" });
       }
-      const updated = await storage.updateAssessmentNotes(id, notes);
+      let existing: Record<string, string> = {};
+      try {
+        if (assessment.notes) existing = JSON.parse(assessment.notes);
+      } catch {}
+      if (notes.trim() === "") {
+        delete existing[questionId];
+      } else {
+        existing[questionId] = notes;
+      }
+      const updated = await storage.updateAssessmentNotes(id, JSON.stringify(existing));
       res.json(updated);
     } catch (error) {
       console.error("Save notes error:", error);
