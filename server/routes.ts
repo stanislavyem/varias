@@ -404,9 +404,10 @@ export async function registerRoutes(
       if (!assessment) {
         return res.status(404).json({ message: "Assessment not found" });
       }
+      const isCreator = assessment.createdByUserId === userId;
       const userMemberships = await storage.getMemberships(userId);
       const orgIds = userMemberships.map((m: any) => m.organizationId);
-      if (!orgIds.includes(assessment.organizationId)) {
+      if (!isCreator && !orgIds.includes(assessment.organizationId)) {
         return res.status(403).json({ message: "Not authorized" });
       }
       const { questionId, notes } = req.body;
