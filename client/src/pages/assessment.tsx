@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRoute, Link, useLocation } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Accordion,
   AccordionContent,
@@ -40,6 +41,8 @@ import {
   Users,
   AlertTriangle,
   Trash2,
+  StickyNote,
+  Loader2,
 } from "lucide-react";
 import type { Assessment, Question, Response, ScoreSnapshot } from "@shared/schema";
 import { parseConstraints } from "@shared/schema";
@@ -67,6 +70,9 @@ export default function AssessmentPage() {
   const [localResponses, setLocalResponses] = useState<Record<string, number>>({});
   const [localConstraints, setLocalConstraints] = useState<Record<string, boolean>>({});
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [localNotes, setLocalNotes] = useState("");
+  const [notesSaving, setNotesSaving] = useState(false);
+  const notesTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data, isLoading, error } = useQuery<AssessmentDetail>({
     queryKey: ["/api/assessments", assessmentId],
@@ -85,6 +91,39 @@ export default function AssessmentPage() {
       setLocalConstraints(existingConstraints);
     }
   }, [data?.responses]);
+
+  useEffect(() => {
+    if (data?.assessment?.notes != null) {
+      setLocalNotes(data.assessment.notes);
+    }
+  }, [data?.assessment?.notes]);
+
+  const saveNotes = useCallback(async (notes: string) => {
+    setNotesSaving(true);
+    try {
+      await apiRequest("PATCH", `/api/assessments/${assessmentId}/notes`, { notes });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to save notes. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setNotesSaving(false);
+    }
+  }, [assessmentId, toast]);
+
+  const handleNotesChange = useCallback((value: string) => {
+    setLocalNotes(value);
+    if (notesTimerRef.current) clearTimeout(notesTimerRef.current);
+    notesTimerRef.current = setTimeout(() => saveNotes(value), 800);
+  }, [saveNotes]);
+
+  useEffect(() => {
+    return () => {
+      if (notesTimerRef.current) clearTimeout(notesTimerRef.current);
+    };
+  }, []);
 
   const saveResponseMutation = useMutation({
     mutationFn: async ({
@@ -342,6 +381,34 @@ export default function AssessmentPage() {
               </CardContent>
             </Card>
           </Link>
+
+          <Card data-testid="card-assessor-notes">
+            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+              <div className="flex items-center gap-2">
+                <StickyNote className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-lg">Assessor Notes</CardTitle>
+              </div>
+              {notesSaving && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Saving...</span>
+                </div>
+              )}
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                placeholder="Add notes here while completing the assessment. These can help you draft action items later..."
+                value={localNotes}
+                onChange={(e) => handleNotesChange(e.target.value)}
+                disabled={isSubmitted}
+                className="min-h-[120px] resize-y text-sm"
+                data-testid="textarea-assessor-notes"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Notes auto-save as you type
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-6">

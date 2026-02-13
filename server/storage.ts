@@ -67,6 +67,7 @@ export interface IStorage {
   getAssessmentsByOrganization(orgId: string): Promise<Assessment[]>;
   createAssessment(assessment: InsertAssessment): Promise<Assessment>;
   updateAssessmentStatus(id: string, status: string): Promise<Assessment>;
+  updateAssessmentNotes(id: string, notes: string): Promise<Assessment>;
   deleteAssessment(id: string): Promise<void>;
   
   // Responses
@@ -223,6 +224,14 @@ export class DatabaseStorage implements IStorage {
   async createAssessment(assessment: InsertAssessment): Promise<Assessment> {
     const [created] = await db.insert(assessments).values(assessment).returning();
     return created;
+  }
+
+  async updateAssessmentNotes(id: string, notes: string): Promise<Assessment> {
+    const [updated] = await db.update(assessments)
+      .set({ notes })
+      .where(eq(assessments.id, id))
+      .returning();
+    return updated;
   }
 
   async updateAssessmentStatus(id: string, status: string): Promise<Assessment> {
