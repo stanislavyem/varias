@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -29,8 +30,12 @@ import { Link } from "wouter";
 
 const formSchema = z.object({
   name: z.string().min(1, "Organization name is required"),
-  industry: z.string().optional(),
-  naicsCode: z.string().max(10, "NAICS code must be 10 characters or less").optional(),
+  address: z.string().min(1, "Address is required"),
+  primaryContact: z.string().min(1, "Primary contact is required"),
+  email: z.string().email("Valid email is required"),
+  phone: z.string().min(1, "Phone number is required"),
+  industry: z.string().min(1, "Industry is required"),
+  operationDescription: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -58,8 +63,12 @@ export default function OrganizationNewPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      address: "",
+      primaryContact: "",
+      email: "",
+      phone: "",
       industry: "",
-      naicsCode: "",
+      operationDescription: "",
     },
   });
 
@@ -124,7 +133,7 @@ export default function OrganizationNewPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organization Name</FormLabel>
+                    <FormLabel>Organization Name *</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter organization name"
@@ -139,10 +148,86 @@ export default function OrganizationNewPage() {
 
               <FormField
                 control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter full address"
+                        {...field}
+                        data-testid="input-address"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="primaryContact"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Primary Contact *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Contact person name"
+                        {...field}
+                        data-testid="input-primary-contact"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="contact@company.com"
+                          {...field}
+                          data-testid="input-email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="tel"
+                          placeholder="(555) 123-4567"
+                          {...field}
+                          data-testid="input-phone"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
                 name="industry"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Industry</FormLabel>
+                    <FormLabel>Industry *</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
@@ -167,19 +252,21 @@ export default function OrganizationNewPage() {
 
               <FormField
                 control={form.control}
-                name="naicsCode"
+                name="operationDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>NAICS Code</FormLabel>
+                    <FormLabel>Operation Description</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="e.g., 236220"
+                      <Textarea
+                        placeholder="Describe the organization's operations (optional)"
+                        className="resize-none"
+                        rows={3}
                         {...field}
-                        data-testid="input-naics-code"
+                        data-testid="textarea-operation-description"
                       />
                     </FormControl>
                     <FormDescription>
-                      Optional. North American Industry Classification System code.
+                      Optional. Brief description of the organization's primary operations.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

@@ -26,6 +26,12 @@ import {
 // Validation schemas
 const createOrganizationSchema = insertOrganizationSchema.extend({
   name: z.string().min(1, "Organization name is required"),
+  address: z.string().min(1, "Address is required"),
+  primaryContact: z.string().min(1, "Primary contact is required"),
+  email: z.string().email("Valid email is required"),
+  phone: z.string().min(1, "Phone number is required"),
+  industry: z.string().min(1, "Industry is required"),
+  operationDescription: z.string().optional(),
 });
 
 const createAssessmentSchema = z.object({

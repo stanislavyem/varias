@@ -22,8 +22,12 @@ export const userProfiles = pgTable("user_profiles", {
 export const organizations = pgTable("organizations", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
+  address: text("address"),
+  primaryContact: text("primary_contact"),
+  email: text("email"),
+  phone: text("phone"),
   industry: text("industry"),
-  naicsCode: varchar("naics_code", { length: 10 }),
+  operationDescription: text("operation_description"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

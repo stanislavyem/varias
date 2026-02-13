@@ -32,6 +32,10 @@ import {
   FileText,
   CheckCircle2,
   Trash2,
+  MapPin,
+  User,
+  Mail,
+  Phone,
 } from "lucide-react";
 import type { Organization, Assessment, ActionItem, ScoreSnapshot, Document } from "@shared/schema";
 
@@ -145,7 +149,6 @@ export default function OrganizationDetailPage() {
             <h1 className="text-3xl font-bold tracking-tight">{organization.name}</h1>
             <p className="text-muted-foreground">
               {organization.industry || "No industry specified"}
-              {organization.naicsCode && ` • NAICS: ${organization.naicsCode}`}
             </p>
           </div>
         </div>
@@ -225,6 +228,58 @@ export default function OrganizationDetailPage() {
           subtitle="Uploaded files"
         />
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Company Profile</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            {organization.address && (
+              <div className="flex items-start gap-3" data-testid="text-org-address">
+                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Address</p>
+                  <p>{organization.address}</p>
+                </div>
+              </div>
+            )}
+            {organization.primaryContact && (
+              <div className="flex items-start gap-3" data-testid="text-org-primary-contact">
+                <User className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Primary Contact</p>
+                  <p>{organization.primaryContact}</p>
+                </div>
+              </div>
+            )}
+            {organization.email && (
+              <div className="flex items-start gap-3" data-testid="text-org-email">
+                <Mail className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Email</p>
+                  <p>{organization.email}</p>
+                </div>
+              </div>
+            )}
+            {organization.phone && (
+              <div className="flex items-start gap-3" data-testid="text-org-phone">
+                <Phone className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Phone</p>
+                  <p>{organization.phone}</p>
+                </div>
+              </div>
+            )}
+          </div>
+          {organization.operationDescription && (
+            <div className="mt-4 pt-4 border-t" data-testid="text-org-operation-description">
+              <p className="text-sm font-medium text-muted-foreground mb-1">Operation Description</p>
+              <p>{organization.operationDescription}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {latestScore && latestScore.overallScore && (
         <Card>

@@ -34,7 +34,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Data Models
 - **Users/Sessions**: Managed by Replit Auth integration
-- **Organizations**: Insured accounts with industry and NAICS codes
+- **Organizations**: Insured accounts with address, primary contact, email, phone, industry, and optional operation description
 - **Assessments**: Risk assessments with DRAFT/SUBMITTED/CLOSED status
 - **Questions**: 20 predefined questions across Safety, WorkersComp, Fleet pillars
 - **Responses**: User answers (1-5 scale) with calculated normScore and weightedPts

@@ -76,11 +76,6 @@ export default function OrganizationsPage() {
                     <p className="text-sm text-muted-foreground mt-1">
                       {org.industry || "No industry specified"}
                     </p>
-                    {org.naicsCode && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        NAICS: {org.naicsCode}
-                      </p>
-                    )}
                   </div>
                 </CardContent>
               </Card>
