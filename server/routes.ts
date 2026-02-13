@@ -399,16 +399,9 @@ export async function registerRoutes(
   app.patch("/api/assessments/:id/notes", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user?.claims?.sub;
       const assessment = await storage.getAssessment(id);
       if (!assessment) {
         return res.status(404).json({ message: "Assessment not found" });
-      }
-      const isCreator = assessment.createdByUserId === userId;
-      const userMemberships = await storage.getMemberships(userId);
-      const orgIds = userMemberships.map((m: any) => m.organizationId);
-      if (!isCreator && !orgIds.includes(assessment.organizationId)) {
-        return res.status(403).json({ message: "Not authorized" });
       }
       const { questionId, notes } = req.body;
       if (typeof questionId !== "string" || typeof notes !== "string") {
