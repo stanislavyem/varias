@@ -69,7 +69,11 @@ export default function AssessmentPage() {
   const [localConstraints, setLocalConstraints] = useState<Record<string, boolean>>({});
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [localNotes, setLocalNotes] = useState<Record<string, string>>({});
+  const [savingNotes, setSavingNotes] = useState<Record<string, boolean>>({});
   const notesTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const pendingNotesRef = useRef<Record<string, string>>({});
+  const assessmentIdRef = useRef(assessmentId);
+  assessmentIdRef.current = assessmentId;
 
   const { data, isLoading, error } = useQuery<AssessmentDetail>({
     queryKey: ["/api/assessments", assessmentId],
@@ -100,27 +104,47 @@ export default function AssessmentPage() {
     }
   }, [data?.assessment?.notes]);
 
-  const saveQuestionNotes = useCallback(async (questionId: string, notes: string) => {
+  const flushNotes = useCallback(async (questionId: string, notes: string) => {
+    const aId = assessmentIdRef.current;
+    if (!aId) return;
+    setSavingNotes((prev) => ({ ...prev, [questionId]: true }));
     try {
-      await apiRequest("PATCH", `/api/assessments/${assessmentId}/notes`, { questionId, notes });
+      await apiRequest("PATCH", `/api/assessments/${aId}/notes`, { questionId, notes });
     } catch {
       toast({
         title: "Error",
         description: "Failed to save notes. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setSavingNotes((prev) => ({ ...prev, [questionId]: false }));
+      delete pendingNotesRef.current[questionId];
     }
-  }, [assessmentId, toast]);
+  }, [toast]);
 
   const handleQuestionNotesChange = useCallback((questionId: string, value: string) => {
     setLocalNotes((prev) => ({ ...prev, [questionId]: value }));
+    pendingNotesRef.current[questionId] = value;
     if (notesTimersRef.current[questionId]) clearTimeout(notesTimersRef.current[questionId]);
-    notesTimersRef.current[questionId] = setTimeout(() => saveQuestionNotes(questionId, value), 800);
-  }, [saveQuestionNotes]);
+    notesTimersRef.current[questionId] = setTimeout(() => flushNotes(questionId, value), 800);
+  }, [flushNotes]);
 
   useEffect(() => {
     return () => {
       Object.values(notesTimersRef.current).forEach(clearTimeout);
+      const pending = { ...pendingNotesRef.current };
+      const aId = assessmentIdRef.current;
+      if (aId && Object.keys(pending).length > 0) {
+        Object.entries(pending).forEach(([qId, noteText]) => {
+          fetch(`/api/assessments/${aId}/notes`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ questionId: qId, notes: noteText }),
+            credentials: "include",
+            keepalive: true,
+          }).catch(() => {});
+        });
+      }
     };
   }, []);
 
@@ -349,6 +373,7 @@ export default function AssessmentPage() {
                           value={localResponses[question.id]}
                           constraintApplied={localConstraints[question.id] || false}
                           notes={localNotes[question.id] || ""}
+                          isSavingNote={!!savingNotes[question.id]}
                           onChange={(value) => handleResponseChange(question.id, value)}
                           onConstraintToggle={(checked) => handleConstraintToggle(question.id, checked)}
                           onNotesChange={(value) => handleQuestionNotesChange(question.id, value)}
@@ -495,13 +520,14 @@ interface QuestionCardProps {
   value: number | undefined;
   constraintApplied: boolean;
   notes: string;
+  isSavingNote: boolean;
   onChange: (value: number) => void;
   onConstraintToggle: (checked: boolean) => void;
   onNotesChange: (value: string) => void;
   disabled: boolean;
 }
 
-function QuestionCard({ question, value, constraintApplied, notes, onChange, onConstraintToggle, onNotesChange, disabled }: QuestionCardProps) {
+function QuestionCard({ question, value, constraintApplied, notes, isSavingNote, onChange, onConstraintToggle, onNotesChange, disabled }: QuestionCardProps) {
   const hasConstraints = !!question.constraints;
   const parsed = hasConstraints ? parseConstraints(question.constraints) : { caps: [], mins: [] };
   const hasCap = parsed.caps.length > 0;
@@ -572,6 +598,11 @@ function QuestionCard({ question, value, constraintApplied, notes, onChange, onC
             className="min-h-[60px] resize-y text-sm"
             data-testid={`textarea-notes-${question.id}`}
           />
+          {isSavingNote && (
+            <p className="text-xs text-muted-foreground" data-testid={`text-saving-note-${question.id}`}>
+              Saving...
+            </p>
+          )}
         </div>
 
         <Accordion type="single" collapsible className="w-full">
