@@ -10,6 +10,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { z } from "zod";
+import { sendActionCompletedEmail } from "./email";
 import {
   calculateQuestionScore,
   applyConstraints,
@@ -599,6 +600,34 @@ export async function registerRoutes(
       }
       const { status } = validationResult.data;
       const action = await storage.updateActionItemStatus(id, status);
+
+      if (status === "DONE" && action.createdByUserId) {
+        try {
+          const [creator] = await db.select().from(users).where(eq(users.id, action.createdByUserId));
+          const org = await storage.getOrganization(action.organizationId);
+          const currentUserId = req.user?.claims?.sub;
+          const [currentUser] = currentUserId
+            ? await db.select().from(users).where(eq(users.id, currentUserId))
+            : [null];
+          
+          if (creator?.email) {
+            const completedByName = currentUser
+              ? `${currentUser.firstName || ""} ${currentUser.lastName || ""}`.trim() || currentUser.email || "Someone"
+              : "Someone";
+            
+            sendActionCompletedEmail({
+              toEmail: creator.email,
+              toName: creator.firstName || creator.email,
+              actionTitle: action.title,
+              organizationName: org?.name || "Unknown",
+              completedByName,
+            }).catch((err) => console.error("Email send failed:", err));
+          }
+        } catch (emailError) {
+          console.error("Error preparing completion email:", emailError);
+        }
+      }
+
       res.json(action);
     } catch (error) {
       console.error("Update action error:", error);
@@ -713,6 +742,66 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Upload document error:", error);
       res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // Action Item Documents
+  app.get("/api/actions/:id/documents", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const docs = await storage.getDocumentsByActionItem(id);
+      res.json(docs);
+    } catch (error) {
+      console.error("Get action documents error:", error);
+      res.status(500).json({ message: "Failed to load documents" });
+    }
+  });
+
+  app.post("/api/actions/:id/documents", isAuthenticated, upload.single("file"), async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      const { id } = req.params;
+      const file = req.file;
+
+      if (!file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const action = await storage.getActionItem(id);
+      if (!action) {
+        return res.status(404).json({ message: "Action item not found" });
+      }
+
+      const doc = await storage.createDocument({
+        organizationId: action.organizationId,
+        actionItemId: id,
+        uploadedByUserId: userId,
+        filename: file.originalname,
+        mimeType: file.mimetype,
+        storagePath: file.path,
+        category: "OTHER",
+      });
+
+      res.json(doc);
+    } catch (error) {
+      console.error("Upload action document error:", error);
+      res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // Serve uploaded files
+  app.get("/api/documents/:id/download", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const allDocs = await storage.getDocuments(req.user?.claims?.sub);
+      const doc = allDocs.find(d => d.id === id);
+      if (!doc) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      res.download(doc.storagePath, doc.filename);
+    } catch (error) {
+      console.error("Download document error:", error);
+      res.status(500).json({ message: "Failed to download document" });
     }
   });
 

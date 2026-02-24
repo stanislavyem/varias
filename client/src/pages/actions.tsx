@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,13 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
+  Upload,
+  FileText,
+  Download,
+  Paperclip,
+  Loader2,
 } from "lucide-react";
-import type { ActionItem } from "@shared/schema";
+import type { ActionItem, Document as DocRecord } from "@shared/schema";
 
 interface ActionWithOrg extends ActionItem {
   organizationName: string;
@@ -339,86 +344,12 @@ export default function ActionsPage() {
                   <div className="border-t">
                     <div className="divide-y">
                       {group.actions.map((action) => (
-                        <div
+                        <ActionItemRow
                           key={action.id}
-                          className="p-4 flex items-start gap-3"
-                          data-testid={`card-action-${action.id}`}
-                        >
-                          <div className="mt-0.5 flex-shrink-0">
-                            {getStatusIcon(action.status)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="font-medium text-sm" data-testid={`text-action-title-${action.id}`}>{action.title}</p>
-                                {action.description && (
-                                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                    {action.description}
-                                  </p>
-                                )}
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {action.dueDate
-                                    ? `Due: ${new Date(action.dueDate).toLocaleDateString()}`
-                                    : `Created: ${new Date(action.createdAt!).toLocaleDateString()}`}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                <StatusBadge status={action.status} />
-                                {action.status === "OPEN" && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      updateStatusMutation.mutate({
-                                        actionId: action.id,
-                                        status: "IN_PROGRESS",
-                                      });
-                                    }}
-                                    disabled={updateStatusMutation.isPending}
-                                    data-testid={`button-start-${action.id}`}
-                                  >
-                                    Start
-                                  </Button>
-                                )}
-                                {action.status === "IN_PROGRESS" && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      updateStatusMutation.mutate({
-                                        actionId: action.id,
-                                        status: "DONE",
-                                      });
-                                    }}
-                                    disabled={updateStatusMutation.isPending}
-                                    data-testid={`button-complete-${action.id}`}
-                                  >
-                                    Complete
-                                  </Button>
-                                )}
-                                {action.status === "DONE" && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      updateStatusMutation.mutate({
-                                        actionId: action.id,
-                                        status: "OPEN",
-                                      });
-                                    }}
-                                    disabled={updateStatusMutation.isPending}
-                                    data-testid={`button-reopen-${action.id}`}
-                                  >
-                                    Reopen
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          action={action}
+                          getStatusIcon={getStatusIcon}
+                          updateStatusMutation={updateStatusMutation}
+                        />
                       ))}
                     </div>
                     <div className="p-3 border-t bg-muted/30">
@@ -447,6 +378,215 @@ export default function ActionsPage() {
             </p>
           </CardContent>
         </Card>
+      )}
+    </div>
+  );
+}
+
+function ActionItemRow({
+  action,
+  getStatusIcon,
+  updateStatusMutation,
+}: {
+  action: ActionWithOrg;
+  getStatusIcon: (status: string) => JSX.Element;
+  updateStatusMutation: any;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [showDocs, setShowDocs] = useState(false);
+
+  const { data: docs } = useQuery<DocRecord[]>({
+    queryKey: ["/api/actions", action.id, "documents"],
+    enabled: showDocs,
+  });
+
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch(`/api/actions/${action.id}/documents`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/actions", action.id, "documents"] });
+      toast({ title: "Uploaded", description: "Document uploaded successfully." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to upload document.", variant: "destructive" });
+    },
+  });
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadMutation.mutate(file);
+      e.target.value = "";
+    }
+  };
+
+  return (
+    <div
+      className="p-4 space-y-3"
+      data-testid={`card-action-${action.id}`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="mt-0.5 flex-shrink-0">
+          {getStatusIcon(action.status)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-medium text-sm" data-testid={`text-action-title-${action.id}`}>{action.title}</p>
+              {action.description && (
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                  {action.description}
+                </p>
+              )}
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-xs text-muted-foreground">
+                  {action.dueDate
+                    ? `Due: ${new Date(action.dueDate).toLocaleDateString()}`
+                    : `Created: ${new Date(action.createdAt!).toLocaleDateString()}`}
+                </span>
+                <button
+                  type="button"
+                  className="text-xs text-primary flex items-center gap-1 hover:underline"
+                  onClick={() => setShowDocs(!showDocs)}
+                  data-testid={`button-toggle-docs-${action.id}`}
+                >
+                  <Paperclip className="h-3 w-3" />
+                  {showDocs ? "Hide docs" : "Proof docs"}
+                  {docs && docs.length > 0 && (
+                    <span className="bg-primary/10 text-primary rounded-full px-1.5 py-0 text-xs font-medium">
+                      {docs.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <StatusBadge status={action.status} />
+              {action.status === "OPEN" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateStatusMutation.mutate({
+                      actionId: action.id,
+                      status: "IN_PROGRESS",
+                    });
+                  }}
+                  disabled={updateStatusMutation.isPending}
+                  data-testid={`button-start-${action.id}`}
+                >
+                  Start
+                </Button>
+              )}
+              {action.status === "IN_PROGRESS" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateStatusMutation.mutate({
+                      actionId: action.id,
+                      status: "DONE",
+                    });
+                  }}
+                  disabled={updateStatusMutation.isPending}
+                  data-testid={`button-complete-${action.id}`}
+                >
+                  Complete
+                </Button>
+              )}
+              {action.status === "DONE" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateStatusMutation.mutate({
+                      actionId: action.id,
+                      status: "OPEN",
+                    });
+                  }}
+                  disabled={updateStatusMutation.isPending}
+                  data-testid={`button-reopen-${action.id}`}
+                >
+                  Reopen
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showDocs && (
+        <div className="ml-7 space-y-2" data-testid={`section-docs-${action.id}`}>
+          {docs && docs.length > 0 && (
+            <div className="space-y-1">
+              {docs.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="flex items-center justify-between gap-2 p-2 rounded-md bg-muted/50 text-sm"
+                  data-testid={`doc-item-${doc.id}`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                    <span className="truncate">{doc.filename}</span>
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
+                      {new Date(doc.createdAt!).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <a
+                    href={`/api/documents/${doc.id}/download`}
+                    className="flex-shrink-0"
+                    data-testid={`button-download-${doc.id}`}
+                  >
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                      <Download className="h-3.5 w-3.5" />
+                    </Button>
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
+          {(!docs || docs.length === 0) && (
+            <p className="text-xs text-muted-foreground">No documents uploaded yet.</p>
+          )}
+          <div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleFileSelect}
+              data-testid={`input-file-${action.id}`}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadMutation.isPending}
+              data-testid={`button-upload-doc-${action.id}`}
+            >
+              {uploadMutation.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Upload className="h-3.5 w-3.5" />
+              )}
+              Upload Proof Document
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

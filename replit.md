@@ -39,8 +39,8 @@ Preferred communication style: Simple, everyday language.
 - **Questions**: 20 predefined questions across Safety, WorkersComp, Fleet pillars
 - **Responses**: User answers (1-5 scale) with calculated normScore and weightedPts
 - **ScoreSnapshots**: Cached calculation results for overall and pillar scores
-- **ActionItems**: Task management with priority ranking and status tracking
-- **Documents**: File attachments with category classification
+- **ActionItems**: Task management with priority ranking and status tracking; completion triggers email to creator via SendGrid
+- **Documents**: File attachments with category classification; can be linked to action items as proof documents (actionItemId column)
 - **SubcontractorResponses**: Separate mini-assessment with guardrail logic
 
 ### Scoring Engine (Do Not Modify)

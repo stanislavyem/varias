@@ -120,6 +120,7 @@ export const documents = pgTable("documents", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   organizationId: varchar("organization_id").notNull(),
   assessmentId: varchar("assessment_id"),
+  actionItemId: varchar("action_item_id"),
   uploadedByUserId: varchar("uploaded_by_user_id").notNull(),
   filename: text("filename").notNull(),
   mimeType: text("mime_type"),

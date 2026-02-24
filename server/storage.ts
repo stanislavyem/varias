@@ -92,7 +92,11 @@ export interface IStorage {
   // Documents
   getDocuments(userId: string): Promise<Document[]>;
   getDocumentsByOrganization(orgId: string): Promise<Document[]>;
+  getDocumentsByActionItem(actionItemId: string): Promise<Document[]>;
   createDocument(doc: InsertDocument): Promise<Document>;
+  
+  // Action Item lookup
+  getActionItem(id: string): Promise<ActionItem | undefined>;
   
   // Subcontractor Responses
   getSubcontractorResponse(assessmentId: string): Promise<SubcontractorResponse | undefined>;
@@ -379,9 +383,21 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(documents.createdAt));
   }
 
+  async getDocumentsByActionItem(actionItemId: string): Promise<Document[]> {
+    return db.select().from(documents)
+      .where(eq(documents.actionItemId, actionItemId))
+      .orderBy(desc(documents.createdAt));
+  }
+
   async createDocument(doc: InsertDocument): Promise<Document> {
     const [created] = await db.insert(documents).values(doc).returning();
     return created;
+  }
+
+  async getActionItem(id: string): Promise<ActionItem | undefined> {
+    const [item] = await db.select().from(actionItems)
+      .where(eq(actionItems.id, id));
+    return item;
   }
 
   // Subcontractor Responses
