@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Link } from "wouter";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -21,16 +23,32 @@ import {
   Clock,
   Building2,
   Filter,
+  ListChecks,
+  ChevronDown,
+  ChevronUp,
+  Plus,
 } from "lucide-react";
-import type { ActionItem, Organization } from "@shared/schema";
+import type { ActionItem } from "@shared/schema";
 
 interface ActionWithOrg extends ActionItem {
   organizationName: string;
 }
 
+interface OrgGroup {
+  organizationId: string;
+  organizationName: string;
+  actions: ActionWithOrg[];
+  total: number;
+  open: number;
+  inProgress: number;
+  done: number;
+  completionPct: number;
+}
+
 export default function ActionsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [expandedOrgs, setExpandedOrgs] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -73,14 +91,61 @@ export default function ActionsPage() {
     return matchesSearch && matchesStatus;
   });
 
+  const orgGroups: OrgGroup[] = (() => {
+    if (!filteredActions) return [];
+    const map = new Map<string, ActionWithOrg[]>();
+    filteredActions.forEach((a) => {
+      if (!map.has(a.organizationId)) map.set(a.organizationId, []);
+      map.get(a.organizationId)!.push(a);
+    });
+    return Array.from(map.entries())
+      .map(([orgId, orgActions]) => {
+        const total = orgActions.length;
+        const open = orgActions.filter((a) => a.status === "OPEN").length;
+        const inProgress = orgActions.filter((a) => a.status === "IN_PROGRESS").length;
+        const done = orgActions.filter((a) => a.status === "DONE").length;
+        const completionPct = total > 0 ? Math.round((done / total) * 100) : 0;
+        return {
+          organizationId: orgId,
+          organizationName: orgActions[0].organizationName,
+          actions: orgActions,
+          total,
+          open,
+          inProgress,
+          done,
+          completionPct,
+        };
+      })
+      .sort((a, b) => {
+        if (a.completionPct === 100 && b.completionPct !== 100) return 1;
+        if (a.completionPct !== 100 && b.completionPct === 100) return -1;
+        return a.completionPct - b.completionPct;
+      });
+  })();
+
+  const toggleOrg = (orgId: string) => {
+    setExpandedOrgs((prev) => {
+      const next = new Set(prev);
+      if (next.has(orgId)) next.delete(orgId);
+      else next.add(orgId);
+      return next;
+    });
+  };
+
+  const totalActions = filteredActions?.length || 0;
+  const totalOpen = filteredActions?.filter((a) => a.status === "OPEN").length || 0;
+  const totalInProgress = filteredActions?.filter((a) => a.status === "IN_PROGRESS").length || 0;
+  const totalDone = filteredActions?.filter((a) => a.status === "DONE").length || 0;
+  const overallCompletion = totalActions > 0 ? Math.round((totalDone / totalActions) * 100) : 0;
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "DONE":
-        return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+        return <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />;
       case "IN_PROGRESS":
-        return <Clock className="h-5 w-5 text-amber-600" />;
+        return <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
       default:
-        return <AlertTriangle className="h-5 w-5 text-red-600" />;
+        return <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />;
     }
   };
 
@@ -88,18 +153,85 @@ export default function ActionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Action Items</h1>
+          <h1 className="text-3xl font-bold tracking-tight" data-testid="text-actions-title">Action Items Dashboard</h1>
           <p className="text-muted-foreground">
-            Manage risk mitigation tasks across all organizations
+            Track risk mitigation progress across all organizations
           </p>
         </div>
       </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card data-testid="card-stat-total">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <ListChecks className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{totalActions}</p>
+                <p className="text-xs text-muted-foreground">Total Items</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card data-testid="card-stat-open">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{totalOpen}</p>
+                <p className="text-xs text-muted-foreground">Open</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card data-testid="card-stat-in-progress">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{totalInProgress}</p>
+                <p className="text-xs text-muted-foreground">In Progress</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card data-testid="card-stat-done">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{totalDone}</p>
+                <p className="text-xs text-muted-foreground">Completed</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {totalActions > 0 && (
+        <Card data-testid="card-overall-progress">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Overall Completion</span>
+              <span className="text-sm font-bold" data-testid="text-overall-completion">{overallCompletion}%</span>
+            </div>
+            <Progress value={overallCompletion} className="h-2" />
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex flex-wrap gap-4">
         <div className="relative flex-1 min-w-[200px] max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search actions..."
+            placeholder="Search actions or companies..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -122,115 +254,192 @@ export default function ActionsPage() {
 
       {isLoading ? (
         <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <Card key={i}>
-              <CardContent className="p-4">
-                <Skeleton className="h-16" />
+              <CardContent className="p-6">
+                <Skeleton className="h-20" />
               </CardContent>
             </Card>
           ))}
         </div>
-      ) : filteredActions && filteredActions.length > 0 ? (
+      ) : orgGroups.length > 0 ? (
         <div className="space-y-4">
-          {filteredActions.map((action) => (
-            <Card key={action.id} data-testid={`card-action-${action.id}`}>
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                    {getStatusIcon(action.status)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-semibold">{action.title}</h3>
-                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                          <Building2 className="h-3 w-3" />
-                          <span>{action.organizationName}</span>
+          {orgGroups.map((group) => {
+            const isExpanded = expandedOrgs.has(group.organizationId);
+            return (
+              <Card key={group.organizationId} data-testid={`card-org-group-${group.organizationId}`}>
+                <button
+                  type="button"
+                  className="w-full text-left p-4 cursor-pointer rounded-t-lg hover-elevate transition-all"
+                  onClick={() => toggleOrg(group.organizationId)}
+                  data-testid={`button-toggle-org-${group.organizationId}`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold truncate" data-testid={`text-org-name-${group.organizationId}`}>
+                          {group.organizationName}
+                        </h3>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                          <span>{group.total} item{group.total !== 1 ? "s" : ""}</span>
+                          {group.open > 0 && (
+                            <span className="text-red-600 dark:text-red-400">{group.open} open</span>
+                          )}
+                          {group.inProgress > 0 && (
+                            <span className="text-amber-600 dark:text-amber-400">{group.inProgress} in progress</span>
+                          )}
+                          {group.done > 0 && (
+                            <span className="text-green-600 dark:text-green-400">{group.done} done</span>
+                          )}
                         </div>
                       </div>
-                      <StatusBadge status={action.status} />
                     </div>
-                    {action.description && (
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                        {action.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="text-xs text-muted-foreground">
-                        {action.dueDate && (
-                          <span>
-                            Due: {new Date(action.dueDate).toLocaleDateString()}
-                          </span>
-                        )}
-                        {!action.dueDate && (
-                          <span>
-                            Created:{" "}
-                            {new Date(action.createdAt!).toLocaleDateString()}
-                          </span>
-                        )}
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                      <div className="hidden sm:flex items-center gap-2 min-w-[140px]">
+                        <Progress value={group.completionPct} className="h-2 flex-1" />
+                        <span
+                          className={`text-sm font-semibold min-w-[40px] text-right ${
+                            group.completionPct === 100
+                              ? "text-green-600 dark:text-green-400"
+                              : group.completionPct >= 50
+                              ? "text-amber-600 dark:text-amber-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                          data-testid={`text-completion-${group.organizationId}`}
+                        >
+                          {group.completionPct}%
+                        </span>
                       </div>
-                      <div className="flex gap-2">
-                        {action.status === "OPEN" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              updateStatusMutation.mutate({
-                                actionId: action.id,
-                                status: "IN_PROGRESS",
-                              })
-                            }
-                            disabled={updateStatusMutation.isPending}
-                            data-testid={`button-start-${action.id}`}
-                          >
-                            Start
-                          </Button>
-                        )}
-                        {action.status === "IN_PROGRESS" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              updateStatusMutation.mutate({
-                                actionId: action.id,
-                                status: "DONE",
-                              })
-                            }
-                            disabled={updateStatusMutation.isPending}
-                            data-testid={`button-complete-${action.id}`}
-                          >
-                            Complete
-                          </Button>
-                        )}
-                        {action.status === "DONE" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              updateStatusMutation.mutate({
-                                actionId: action.id,
-                                status: "OPEN",
-                              })
-                            }
-                            disabled={updateStatusMutation.isPending}
-                            data-testid={`button-reopen-${action.id}`}
-                          >
-                            Reopen
-                          </Button>
-                        )}
+                      <div className="sm:hidden">
+                        <span
+                          className={`text-sm font-semibold ${
+                            group.completionPct === 100
+                              ? "text-green-600 dark:text-green-400"
+                              : group.completionPct >= 50
+                              ? "text-amber-600 dark:text-amber-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          {group.completionPct}%
+                        </span>
                       </div>
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      )}
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t">
+                    <div className="divide-y">
+                      {group.actions.map((action) => (
+                        <div
+                          key={action.id}
+                          className="p-4 flex items-start gap-3"
+                          data-testid={`card-action-${action.id}`}
+                        >
+                          <div className="mt-0.5 flex-shrink-0">
+                            {getStatusIcon(action.status)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="font-medium text-sm" data-testid={`text-action-title-${action.id}`}>{action.title}</p>
+                                {action.description && (
+                                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                    {action.description}
+                                  </p>
+                                )}
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  {action.dueDate
+                                    ? `Due: ${new Date(action.dueDate).toLocaleDateString()}`
+                                    : `Created: ${new Date(action.createdAt!).toLocaleDateString()}`}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <StatusBadge status={action.status} />
+                                {action.status === "OPEN" && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateStatusMutation.mutate({
+                                        actionId: action.id,
+                                        status: "IN_PROGRESS",
+                                      });
+                                    }}
+                                    disabled={updateStatusMutation.isPending}
+                                    data-testid={`button-start-${action.id}`}
+                                  >
+                                    Start
+                                  </Button>
+                                )}
+                                {action.status === "IN_PROGRESS" && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateStatusMutation.mutate({
+                                        actionId: action.id,
+                                        status: "DONE",
+                                      });
+                                    }}
+                                    disabled={updateStatusMutation.isPending}
+                                    data-testid={`button-complete-${action.id}`}
+                                  >
+                                    Complete
+                                  </Button>
+                                )}
+                                {action.status === "DONE" && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateStatusMutation.mutate({
+                                        actionId: action.id,
+                                        status: "OPEN",
+                                      });
+                                    }}
+                                    disabled={updateStatusMutation.isPending}
+                                    data-testid={`button-reopen-${action.id}`}
+                                  >
+                                    Reopen
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="p-3 border-t bg-muted/30">
+                      <Link href={`/organizations/${group.organizationId}/actions/new`}>
+                        <Button variant="ghost" size="sm" className="gap-2 w-full" data-testid={`button-add-action-${group.organizationId}`}>
+                          <Plus className="h-3.5 w-3.5" />
+                          Add Action Item
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </Card>
+            );
+          })}
         </div>
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <CheckCircle2 className="h-16 w-16 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No action items found</h3>
+            <h3 className="text-lg font-semibold mb-2" data-testid="text-no-actions">No action items found</h3>
             <p className="text-muted-foreground text-center">
               {search || statusFilter !== "all"
                 ? "Try adjusting your search or filters"
