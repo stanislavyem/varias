@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Shield, TrendingUp, FileCheck, Users, BarChart3, ClipboardList } from "lucide-react";
+import { TrendingUp, FileCheck, Users, BarChart3, ClipboardList, Shield } from "lucide-react";
+import logoImg from "@assets/RiskCtrl_Pro_1775234611757.png";
 
 export default function LandingPage() {
   return (
@@ -8,9 +9,8 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <Shield className="h-8 w-8 text-primary" />
-              <span className="text-xl font-semibold">Risk App</span>
+            <div className="flex items-center">
+              <img src={logoImg} alt="RiskCtrlPro" className="h-9 w-auto object-contain" />
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
@@ -188,7 +188,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-serif font-bold mb-4">Start Assessing Risk Today</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            Join insurance professionals who trust Risk App for comprehensive risk assessment and management.
+            Join insurance professionals who trust RiskCtrlPro for comprehensive risk assessment and management.
           </p>
           <a href="/api/login">
             <Button size="lg" data-testid="button-cta-bottom">
@@ -200,12 +200,11 @@ export default function LandingPage() {
 
       <footer className="border-t py-8 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-primary" />
-            <span className="font-semibold">Risk App</span>
+          <div className="flex items-center">
+            <img src={logoImg} alt="RiskCtrlPro" className="h-7 w-auto object-contain" />
           </div>
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Risk App. All rights reserved.
+            &copy; {new Date().getFullYear()} RiskCtrlPro. All rights reserved.
           </p>
         </div>
       </footer>

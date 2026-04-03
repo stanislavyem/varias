@@ -1,8 +1,8 @@
-# Risk App - Insurance Risk Assessment Platform
+# RiskCtrlPro - Insurance Risk Assessment Platform
 
 ## Overview
 
-Risk App is a full-stack web application for insurance risk assessment and action management. It enables carriers, agents, and insured organizations to evaluate safety, workers' compensation, and fleet risks through a structured 20-question assessment with precision scoring based on an Excel-defined scoring engine.
+RiskCtrlPro is a full-stack web application for insurance risk assessment and action management. It enables carriers, agents, and insured organizations to evaluate safety, workers' compensation, and fleet risks through a structured 20-question assessment with precision scoring based on an Excel-defined scoring engine.
 
 The platform uses a direct multiplication scoring formula on a 1-5 scale across three pillars (Safety 40%, Workers Comp 20%, Fleet 40%), with rating bands from "High Risk" to "Strong / Low Risk". It also includes a subcontractor sub-score assessment with guardrail triggering logic.
 

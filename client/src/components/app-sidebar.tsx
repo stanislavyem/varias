@@ -6,9 +6,9 @@ import {
   Users,
   FileText,
   MessageSquare,
-  Shield,
   LogOut,
 } from "lucide-react";
+import logoImg from "@assets/RiskCtrl_Pro_1775234611757.png";
 import {
   Sidebar,
   SidebarContent,
@@ -48,15 +48,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-4 border-b">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
-            <Shield className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="font-semibold text-lg">Risk App</h1>
-            <p className="text-xs text-muted-foreground">Risk Assessment</p>
-          </div>
+      <SidebarHeader className="p-3 border-b">
+        <div className="flex items-center">
+          <img src={logoImg} alt="RiskCtrlPro" className="h-10 w-auto object-contain rounded-md" />
         </div>
       </SidebarHeader>
       <SidebarContent>
