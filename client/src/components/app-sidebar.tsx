@@ -49,8 +49,8 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="px-2 py-0 border-b overflow-hidden">
         <div className="flex flex-col">
-          <div className="overflow-hidden" style={{ height: '80px' }}>
-            <img src="/logo.png" alt="RiskCtrlPro" style={{ height: '140px', width: 'auto', marginTop: '-30px', marginBottom: '-30px' }} />
+          <div className="overflow-hidden" style={{ height: '90px' }}>
+            <img src="/logo.png" alt="RiskCtrlPro" style={{ height: '160px', width: 'auto', marginTop: '-35px', marginBottom: '-35px' }} />
           </div>
           <p className="text-xs text-muted-foreground pl-1 pb-1">From Risk Insight to Action</p>
         </div>
