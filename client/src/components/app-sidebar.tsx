@@ -47,9 +47,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-3 border-b">
-        <div className="flex flex-col gap-1">
-          <img src="/logo.png" alt="RiskCtrlPro" className="h-20 w-auto object-contain" />
+      <SidebarHeader className="px-2 py-1 border-b">
+        <div className="flex flex-col gap-0.5">
+          <img src="/logo.png" alt="RiskCtrlPro" className="h-28 w-auto object-contain" />
           <p className="text-xs text-muted-foreground pl-1">From Risk Insight to Action</p>
         </div>
       </SidebarHeader>

@@ -7,9 +7,9 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background">
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-24">
             <div className="flex items-center">
-              <img src="/logo.png" alt="RiskCtrlPro" className="h-16 w-auto object-contain" />
+              <img src="/logo.png" alt="RiskCtrlPro" className="h-20 w-auto object-contain" />
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
@@ -22,7 +22,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <section className="pt-36 pb-20 px-4">
+      <section className="pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
