@@ -32,7 +32,7 @@ export default function LandingPage() {
                   <span className="block text-primary">to Action</span>
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-lg">
-                  RiskCtrlPro streamlines your risk assessment process with a comprehensive platform. 
+                  RiskCtrlPro automates your risk assessment process with a comprehensive platform. 
                   Evaluate safety, workers' compensation, and fleet risks with precision scoring.
                 </p>
               </div>
