@@ -185,7 +185,7 @@ export default function LandingPage() {
 
       <section id="benefits" className="py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-serif font-bold mb-4">Start Assessing Risk Today</h2>
+          <h2 className="text-3xl font-serif font-bold mb-4">Start Automating Risk Today</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
             Join insurance professionals who trust RiskCtrlPro for comprehensive risk assessment and management.
           </p>
