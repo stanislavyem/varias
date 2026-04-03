@@ -29,11 +29,11 @@ export default function LandingPage() {
             <div className="space-y-8">
               <div className="space-y-4">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight leading-tight">
-                  Insurance Risk Assessment
-                  <span className="block text-primary">Made Simple</span>
+                  From Risk Insight
+                  <span className="block text-primary">to Action</span>
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-lg">
-                  Streamline your risk assessment process with our comprehensive platform. 
+                  RiskCtrlPro streamlines your risk assessment process with a comprehensive platform. 
                   Evaluate safety, workers' compensation, and fleet risks with precision scoring.
                 </p>
               </div>

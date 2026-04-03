@@ -49,8 +49,9 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="p-3 border-b">
-        <div className="flex items-center">
+        <div className="flex flex-col gap-1">
           <img src={logoImg} alt="RiskCtrlPro" className="h-10 w-auto object-contain rounded-md" />
+          <p className="text-xs text-muted-foreground pl-1">From Risk Insight to Action</p>
         </div>
       </SidebarHeader>
       <SidebarContent>
