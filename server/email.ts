@@ -27,13 +27,14 @@ export async function sendActionCompletedEmail({
 
   const msg = {
     to: toEmail,
-    from: { email: FROM_EMAIL, name: "Risk App" },
+    from: { email: FROM_EMAIL, name: "RiskCtrlPro" },
     subject: `Action Item Completed: ${actionTitle}`,
-    text: `Hi ${toName},\n\nThe following action item has been marked as completed:\n\n"${actionTitle}"\nOrganization: ${organizationName}\nCompleted by: ${completedByName}\n\nLog in to Risk App to review the details and any attached proof documents.\n\nBest regards,\nRisk App`,
+    text: `Hi ${toName},\n\nThe following action item has been marked as completed:\n\n"${actionTitle}"\nOrganization: ${organizationName}\nCompleted by: ${completedByName}\n\nLog in to RiskCtrlPro to review the details and any attached proof documents.\n\nBest regards,\nRiskCtrlPro`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #16a34a; padding: 20px; border-radius: 8px 8px 0 0;">
+        <div style="background-color: #1e3a5f; padding: 20px; border-radius: 8px 8px 0 0;">
           <h2 style="color: white; margin: 0;">Action Item Completed</h2>
+          <p style="color: #93c5fd; margin: 4px 0 0 0; font-size: 13px;">From Risk Insight to Action</p>
         </div>
         <div style="border: 1px solid #e5e7eb; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
           <p>Hi ${toName},</p>
@@ -43,8 +44,8 @@ export async function sendActionCompletedEmail({
             <p style="color: #6b7280; margin: 0 0 4px 0;">Organization: ${organizationName}</p>
             <p style="color: #6b7280; margin: 0;">Completed by: ${completedByName}</p>
           </div>
-          <p>Log in to Risk App to review the details and any attached proof documents.</p>
-          <p style="color: #9ca3af; font-size: 12px; margin-top: 24px;">This is an automated notification from Risk App.</p>
+          <p>Log in to RiskCtrlPro to review the details and any attached proof documents.</p>
+          <p style="color: #9ca3af; font-size: 12px; margin-top: 24px;">This is an automated notification from RiskCtrlPro.</p>
         </div>
       </div>
     `,
