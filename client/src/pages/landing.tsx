@@ -8,8 +8,8 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-24">
-            <div className="flex items-center">
-              <img src="/logo.png" alt="RiskCtrlPro" className="h-20 w-auto object-contain" />
+            <div className="flex items-center overflow-hidden" style={{ height: '96px' }}>
+              <img src="/logo.png" alt="RiskCtrlPro" style={{ height: '160px', width: 'auto', marginTop: '-32px', marginBottom: '-32px' }} />
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
