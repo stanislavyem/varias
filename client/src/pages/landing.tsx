@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, FileCheck, Users, BarChart3, ClipboardList, Shield } from "lucide-react";
-import logoImg from "@assets/RiskCtrlPro_1775235014374.png";
 
 export default function LandingPage() {
   return (
@@ -10,7 +9,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <img src={logoImg} alt="RiskCtrlPro" className="h-12 w-auto object-contain" />
+              <img src="/logo.png" alt="RiskCtrlPro" className="h-12 w-auto object-contain" />
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">Features</a>
@@ -201,7 +200,7 @@ export default function LandingPage() {
       <footer className="border-t py-8 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center">
-            <img src={logoImg} alt="RiskCtrlPro" className="h-7 w-auto object-contain" />
+            <img src="/logo.png" alt="RiskCtrlPro" className="h-7 w-auto object-contain" />
           </div>
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} RiskCtrlPro. All rights reserved.
