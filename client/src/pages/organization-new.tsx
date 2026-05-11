@@ -133,10 +133,10 @@ export default function OrganizationNewPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organization Name *</FormLabel>
+                    <FormLabel>Owner (Carrier / Broker) *</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter organization name"
+                        placeholder="Enter owner's name"
                         {...field}
                         data-testid="input-organization-name"
                       />
@@ -151,10 +151,10 @@ export default function OrganizationNewPage() {
                 name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address *</FormLabel>
+                    <FormLabel>Insured *</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter full address"
+                        placeholder="Enter insured"
                         {...field}
                         data-testid="input-address"
                       />
